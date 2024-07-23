@@ -1,7 +1,6 @@
 ### A Pages Analyzer:
 [![Actions Status](https://github.com/BroCodeX/java-project-72/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/BroCodeX/java-project-72/actions)
-[![Maintainability](https://api.codeclimate.com/v1/badges/663a72d4f83e530b7768/maintainability)](https://codeclimate.com/github/BroCodeX/java-project-72/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/663a72d4f83e530b7768/test_coverage)](https://codeclimate.com/github/BroCodeX/java-project-72/test_coverage)
+[![Main-CI](https://github.com/BroCodeX/java-project-72/actions/workflows/main-CI.yml/badge.svg)](https://github.com/BroCodeX/java-project-72/actions/workflows/main-CI.yml)
 
 ## About
 Web application for analyzing SEO web pages.
