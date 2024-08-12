@@ -8,6 +8,7 @@ plugins {
     id("com.adarshr.test-logger") version "4.0.0"
     id("io.freefair.lombok") version "8.4"
     jacoco
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "hexlet.code"
@@ -25,6 +26,11 @@ dependencies {
     implementation("org.apache.commons:commons-collections4:4.4")
     implementation("info.picocli:picocli:4.7.5")
     implementation("com.puppycrawl.tools:checkstyle:10.15.0")
+    // https://mvnrepository.com/artifact/io.javalin/javalin
+    implementation("io.javalin:javalin:6.2.0")
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+    testImplementation("org.slf4j:slf4j-simple:2.0.16")
+
 }
 
 tasks.test {
@@ -46,4 +52,8 @@ tasks.jacocoTestReport {
     reports {
         xml.required = true
     }
+}
+
+application {
+    mainClass.set("hexlet.code.App")
 }
