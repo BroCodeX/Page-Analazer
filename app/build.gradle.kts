@@ -26,10 +26,10 @@ dependencies {
     implementation("org.apache.commons:commons-collections4:4.4")
     implementation("info.picocli:picocli:4.7.5")
     implementation("com.puppycrawl.tools:checkstyle:10.15.0")
-    // https://mvnrepository.com/artifact/io.javalin/javalin
     implementation("io.javalin:javalin:6.2.0")
-    // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-    testImplementation("org.slf4j:slf4j-simple:2.0.16")
+    implementation("org.slf4j:slf4j-simple:2.0.16")
+    implementation("io.javalin:javalin-rendering:6.1.6")
+    implementation("gg.jte:jte:3.1.12")
 
 }
 
