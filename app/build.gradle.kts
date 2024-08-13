@@ -30,6 +30,8 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.16")
     implementation("io.javalin:javalin-rendering:6.1.6")
     implementation("gg.jte:jte:3.1.12")
+    implementation("com.h2database:h2:2.2.224")
+    implementation("com.zaxxer:HikariCP:5.1.0")
 
 }
 
