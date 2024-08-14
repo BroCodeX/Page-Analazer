@@ -33,6 +33,7 @@ dependencies {
     implementation("com.h2database:h2:2.2.224")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.postgresql:postgresql:42.7.3")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.17.0")
 
 }
 
