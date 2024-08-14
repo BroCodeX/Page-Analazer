@@ -12,4 +12,8 @@ public class UrlsController {
     public static void show(Context context) {
         context.render("urls/show.jte");
     }
+
+    public static void create(Context context) {
+        context.render("urls/index.jte");
+    }
 }
