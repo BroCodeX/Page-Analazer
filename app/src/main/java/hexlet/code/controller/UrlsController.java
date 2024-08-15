@@ -20,6 +20,8 @@ public class UrlsController {
     public static void index(Context context) throws SQLException {
         List<UrlModel> urlModels = UrlRepository.getEntries();
         UrlsPage page = new UrlsPage(urlModels);
+        String flash = context.consumeSessionAttribute("flash");
+        page.setFlash(flash);
         context.render("urls/index.jte", model("page", page));
     }
 
@@ -27,6 +29,8 @@ public class UrlsController {
         Long id = context.pathParamAsClass("id", Long.class).get();
         UrlModel url = UrlRepository.find(id).orElseThrow(() -> new NotFoundResponse("Url has not found"));
         UrlPage page = new UrlPage(url);
+        String flash = context.consumeSessionAttribute("flash");
+        page.setFlash(flash);
         context.render("urls/show.jte", model("page", page));
     }
 
@@ -37,10 +41,11 @@ public class UrlsController {
                     .get();
             UrlModel urlModel = new UrlModel(name, LocalDateTime.now());
             UrlRepository.save(urlModel);
+            context.sessionAttribute("flash", "Урл был добавлен");
             context.redirect(NamedRoutes.urlsPath());
         } catch (ValidationException ex) {
-            var name = context.formParam("name");
-            var page = new UrlsPage(UrlRepository.getEntries());
+            var page = new UrlPage();
+            page.setFlash(ex.getMessage());
             context.render("urls/index.jte", model("page", page));
         }
 
