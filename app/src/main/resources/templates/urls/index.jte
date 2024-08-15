@@ -1,3 +1,6 @@
+@import hexlet.code.dto.UrlsPage
+@param UrlsPage page
+
 @template.layout.page(
 content = @`
     <main style="max-width: 800px; margin: 50px auto; padding: 60px 40px; background-color: white; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); text-align: center;">
