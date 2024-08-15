@@ -36,7 +36,7 @@ public class UrlsController {
 
     public static void create(Context context) throws SQLException {
         try {
-            var name = context.pathParamAsClass("name", String.class)
+            var name = context.formParamAsClass("url", String.class)
                     .check(value -> !value.isEmpty(), "Поле не должно быть пустым")
                     .get();
             UrlModel urlModel = new UrlModel(name, LocalDateTime.now());

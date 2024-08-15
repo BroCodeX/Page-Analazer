@@ -16,7 +16,12 @@ content = @`
             </tr>
             </thead>
             <tbody>
-
+            <tr>
+                <td style="padding: 12px; border-bottom: 1px solid #ddd;">${page.getUrlModel().getId()}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #ddd;">${page.getUrlModel().getName()}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #ddd;">${page.getUrlModel().getCreatedAt().toString()}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #ddd;">${page.getUrlModel().getId()}</td>
+            </tr>
             </tbody>
         </table>
     </main>

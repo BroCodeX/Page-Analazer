@@ -16,12 +16,14 @@ content = @`
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td style="padding: 12px; border-bottom: 1px solid #ddd;">1</td>
-                <td style="padding: 12px; border-bottom: 1px solid #ddd;">example.com</td>
-                <td style="padding: 12px; border-bottom: 1px solid #ddd;">2024-08-14</td>
-                <td style="padding: 12px; border-bottom: 1px solid #ddd;">200</td>
-            </tr>
+            @for(var url : page.getUrlModels())
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid #ddd;">${url.getId()}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #ddd;">${url.getName()}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #ddd;">${url.getCreatedAt().toString()}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #ddd;">${url.getId()}</td>
+                </tr>
+            @endfor
             </tbody>
         </table>
     </main>
