@@ -1,4 +1,4 @@
-@import hexlet.code.dto.UrlsPage
+@import hexlet.code.dto.urls.UrlsPage
 @param UrlsPage page
 
 @template.layout.page(
