@@ -43,13 +43,9 @@ public class UrlsController {
             context.sessionAttribute("flashType", "success");
             context.redirect(NamedRoutes.urlsPath());
         } else {
-//            var page = new UrlPage();
             context.sessionAttribute("flash", UrlHandler.getMessage());
             context.sessionAttribute("flashType", "danger");
-//            page.setFlash(UrlHandler.getMessage());
-//            page.setFlashType("danger");
             context.redirect(NamedRoutes.rootPath());
-//            context.render("index.jte", model("page", page)).status(422);
         }
     }
 }
