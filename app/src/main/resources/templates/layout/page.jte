@@ -1,6 +1,8 @@
 @import hexlet.code.util.NamedRoutes
+@import hexlet.code.dto.BasePage
 @import gg.jte.Content
 @param Content content
+@param BasePage page = null
 
 <!DOCTYPE html>
 <html lang="en">
@@ -8,28 +10,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Анализатор страниц</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 </head>
-<body style="background-color: #f3f4f6; font-family: Arial, sans-serif; color: #333; margin: 0; padding: 0;">
+<body class="bg-light text-dark">
 
-<header style="background-color: #3a3f44; padding: 20px 40px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); display: flex; align-items: center; justify-content: space-between;">
-    <h1 style="font-size: 28px; margin: 0; color: #ffffff; letter-spacing: 1px; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);">Анализатор страниц</h1>
-    <nav style="display: flex; gap: 20px;">
-        <a href="${NamedRoutes.rootPath()}" style="text-decoration: none; color: #ddd; font-size: 18px; padding: 10px 20px; background-color: #55595e; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">
-            Главная
-        </a>
-        <a href="${NamedRoutes.urlsPath()}" style="text-decoration: none; color: #ddd; font-size: 18px; padding: 10px 20px; background-color: #55595e; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">
-            Сайты
-        </a>
-    </nav>
+<header class="bg-dark py-3 mb-4 shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center">
+        <h1 class="text-white fs-2 m-0">Анализатор страниц</h1>
+        <nav class="d-flex gap-3">
+            <a href="${NamedRoutes.rootPath()}" class="btn btn-secondary">
+                Главная
+            </a>
+            <a href="${NamedRoutes.urlsPath()}" class="btn btn-secondary">
+                Сайты
+            </a>
+        </nav>
+    </div>
 </header>
-
-<div class="mx-auto p-4 py-md-5">
-    ${content}
+<div class="container-fluid py-4">
+    @if(page != null && page.getFlash()!= null)
+        <div class="alert alert-${page.getFlashType()}" role="alert">
+            ${page.getFlash()}
+        </div>
+    @endif
 </div>
-
+${content}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-OERcA2EU6Kv59MYOkLhTOFQ5k5E23hFzV2KR/IJ5RsOB1NYzj9K5G7niu735Sk7l" crossorigin="anonymous"></script>
 </body>
 </html>
-
-
-
-

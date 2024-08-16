@@ -2,26 +2,27 @@
 @param UrlsPage page
 
 @template.layout.page(
+page = page,
 content = @`
-    <main style="max-width: 800px; margin: 50px auto; padding: 60px 40px; background-color: white; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); text-align: center;">
-        <h2 style="font-size: 36px; margin-bottom: 30px; color: #3a3f44;">Сайты</h2>
+    <main class="mx-auto my-5 p-5 bg-white rounded shadow text-center" style="max-width: 800px;">
+        <h2 class="fs-1 mb-4 text-dark">Сайты</h2>
 
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-            <thead>
-            <tr style="background-color: #f3f4f6; color: #3a3f44; text-align: left;">
-                <th style="padding: 12px; border-bottom: 2px solid #ddd;">ID</th>
-                <th style="padding: 12px; border-bottom: 2px solid #ddd;">Имя</th>
-                <th style="padding: 12px; border-bottom: 2px solid #ddd;">Последняя проверка</th>
-                <th style="padding: 12px; border-bottom: 2px solid #ddd;">Код ответа</th>
+        <table class="table table-hover mt-4">
+            <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Последняя проверка</th>
+                <th>Код ответа</th>
             </tr>
             </thead>
             <tbody>
             @for(var url : page.getUrlModels())
                 <tr>
-                    <td style="padding: 12px; border-bottom: 1px solid #ddd;">${url.getId()}</td>
-                    <td style="padding: 12px; border-bottom: 1px solid #ddd;">${url.getName()}</td>
-                    <td style="padding: 12px; border-bottom: 1px solid #ddd;">${url.getCreatedAt().toString()}</td>
-                    <td style="padding: 12px; border-bottom: 1px solid #ddd;">${url.getId()}</td>
+                    <td>${url.getId()}</td>
+                    <td>${url.getName()}</td>
+                    <td>${url.getCreatedAt().toString()}</td>
+                    <td>${url.getId()}</td>
                 </tr>
             @endfor
             </tbody>
@@ -29,13 +30,12 @@ content = @`
     </main>
 
     <script>
-        // Добавляем анимацию выделения строк при наведении на таблицу
         document.querySelectorAll('tbody tr').forEach(row => {
             row.addEventListener('mouseover', () => {
-                row.style.backgroundColor = '#eef2f7';
+                row.classList.add('table-active');
             });
             row.addEventListener('mouseout', () => {
-                row.style.backgroundColor = row.style.backgroundColor === 'rgb(239, 242, 247)' ? '#f9f9f9' : 'white';
+                row.classList.remove('table-active');
             });
         });
     </script>

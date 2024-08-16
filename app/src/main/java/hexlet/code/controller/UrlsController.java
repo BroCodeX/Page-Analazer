@@ -1,5 +1,6 @@
 package hexlet.code.controller;
 
+import hexlet.code.dto.BasePage;
 import hexlet.code.dto.urls.UrlPage;
 import hexlet.code.dto.urls.UrlsPage;
 import hexlet.code.model.UrlModel;
@@ -20,8 +21,8 @@ public class UrlsController {
     public static void index(Context context) throws SQLException {
         List<UrlModel> urlModels = UrlRepository.getEntries();
         UrlsPage page = new UrlsPage(urlModels);
-        String flash = context.consumeSessionAttribute("flash");
-        page.setFlash(flash);
+        page.setFlash(context.consumeSessionAttribute("flash"));
+        page.setFlashType(context.consumeSessionAttribute("flashType"));
         context.render("urls/index.jte", model("page", page));
     }
 
@@ -29,8 +30,8 @@ public class UrlsController {
         Long id = context.pathParamAsClass("id", Long.class).get();
         UrlModel url = UrlRepository.find(id).orElseThrow(() -> new NotFoundResponse("Url has not found"));
         UrlPage page = new UrlPage(url);
-        String flash = context.consumeSessionAttribute("flash");
-        page.setFlash(flash);
+//        String flash = context.consumeSessionAttribute("flash");
+//        page.setFlash(flash);
         context.render("urls/show.jte", model("page", page));
     }
 
@@ -42,11 +43,13 @@ public class UrlsController {
             UrlModel urlModel = new UrlModel(name, LocalDateTime.now());
             UrlRepository.save(urlModel);
             context.sessionAttribute("flash", "Урл был добавлен");
+            context.sessionAttribute("flashType", "success");
             context.redirect(NamedRoutes.urlsPath());
         } catch (ValidationException ex) {
             var page = new UrlPage();
             page.setFlash(ex.getMessage());
-            context.render("urls/index.jte", model("page", page));
+            page.setFlashType("warning");
+            context.render("urls/index.jte", model("page", page)).status(422);
         }
 
     }
