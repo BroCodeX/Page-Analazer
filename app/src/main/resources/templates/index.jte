@@ -1,5 +1,8 @@
+@import hexlet.code.dto.urls.UrlPage
 @import hexlet.code.util.NamedRoutes
+@param UrlPage page
 @template.layout.page(
+    page = page,
 content = @`
     <main class="mx-auto my-5 p-5 bg-white rounded shadow text-center" style="max-width: 900px;">
         <h2 class="fs-1 mb-4 text-dark">Анализатор страниц</h2>

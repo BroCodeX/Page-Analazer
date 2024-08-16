@@ -5,8 +5,10 @@ import hexlet.code.dto.urls.UrlsPage;
 import hexlet.code.model.UrlModel;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
+import hexlet.code.util.UrlChecker;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
+import io.javalin.validation.ValidationError;
 import io.javalin.validation.ValidationException;
 
 import java.sql.SQLException;
@@ -36,19 +38,72 @@ public class UrlsController {
     public static void create(Context context) throws SQLException {
         try {
             var name = context.formParamAsClass("url", String.class)
-                    .check(value -> !value.isEmpty(), "Поле не должно быть пустым")
+                    .check(value -> {
+                        try {
+                            return UrlChecker.getCheck(value);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }, UrlChecker.getMessage())
                     .get();
             UrlModel urlModel = new UrlModel(name, LocalDateTime.now());
             UrlRepository.save(urlModel);
-            context.sessionAttribute("flash", "Урл был добавлен");
+            context.sessionAttribute("flash", "Страница успешно добавлена");
             context.sessionAttribute("flashType", "success");
             context.redirect(NamedRoutes.urlsPath());
         } catch (ValidationException ex) {
             var page = new UrlPage();
-            page.setFlash(ex.getMessage());
-            page.setFlashType("warning");
-            context.render("urls/index.jte", model("page", page)).status(422);
+//            String errorMsg = "";
+//            for (var validator : ex.getErrors().values()) {
+//                for (var error : validator) {
+//                    errorMsg = error.getMessage();
+//                }
+//            }
+//            page.setFlash(errorMsg);
+            page.setFlash(ex.getErrors().values().stream()
+                    .flatMap(List::stream)
+                    .map(ValidationError::getMessage)
+                    .findFirst()
+                    .orElse(""));
+            page.setFlashType("danger");
+            context.render("index.jte", model("page", page)).status(422);
         }
 
+
     }
+
+//    public static void create(Context context) throws SQLException {
+//        try {
+//            var name = context.formParamAsClass("url", String.class)
+//                    .check(value -> {
+//                        try {
+//                            return UrlChecker.getCheck(value);
+//                        } catch (SQLException e) {
+//                            throw new RuntimeException(e);
+//                        }
+//                    }, "Некорректный URL")
+//                    .get();
+//            UrlModel urlModel = new UrlModel(name, LocalDateTime.now());
+//            UrlRepository.save(urlModel);
+//            context.sessionAttribute("flash", "Страница успешно добавлена");
+//            context.sessionAttribute("flashType", "success");
+//            context.redirect(NamedRoutes.urlsPath());
+//        } catch (ValidationException ex) {
+//            var page = new UrlPage();
+//            String errorMsg = "sdf";
+//            for (var validator : ex.getErrors().values()) {
+//                for (var error : validator) {
+//                    errorMsg = error.getMessage();
+//                }
+//            }
+//            page.setFlash(errorMsg);
+////            page.setFlash(ex.getErrors()
+////                    .values()
+////                    .stream()
+////                    .map(error -> error.getFirst().getMessage())
+////                    .toString());
+//            page.setFlashType("danger");
+//            context.render("index.jte", model("page", page)).status(422);
+//        }
+//    }
 }

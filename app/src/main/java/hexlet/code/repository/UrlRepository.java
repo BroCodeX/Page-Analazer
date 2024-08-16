@@ -32,7 +32,7 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static Optional<UrlModel> find(Long id) throws SQLException {
-        String sql = "SELECT * FROM urls WHERE ID = ?";
+        String sql = "SELECT * FROM urls WHERE id = ?";
         try (var conn = dataSource.getConnection();
                 var preparedStmt = conn.prepareStatement(sql)) {
             preparedStmt.setLong(1, id);
@@ -40,6 +40,25 @@ public class UrlRepository extends BaseRepository {
             if (set.next()) {
                 String name = set.getString("name");
                 LocalDateTime createdAt = set.getTimestamp("created_at").toLocalDateTime();
+                UrlModel urlModel = new UrlModel(name, createdAt);
+                urlModel.setId(id);
+                return Optional.of(urlModel);
+            } else {
+                return Optional.empty();
+            }
+        }
+    }
+
+    public static Optional<UrlModel> find(String url) throws SQLException {
+        String sql = "SELECT * FROM urls WHERE name = ?";
+        try (var conn = dataSource.getConnection();
+             var preparedStmt = conn.prepareStatement(sql)) {
+            preparedStmt.setString(1, url);
+            ResultSet set = preparedStmt.executeQuery();
+            if (set.next()) {
+                String name = set.getString("name");
+                LocalDateTime createdAt = set.getTimestamp("created_at").toLocalDateTime();
+                Long id = set.getLong("id");
                 UrlModel urlModel = new UrlModel(name, createdAt);
                 urlModel.setId(id);
                 return Optional.of(urlModel);
