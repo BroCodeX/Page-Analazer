@@ -1,6 +1,5 @@
 package hexlet.code.controller;
 
-import hexlet.code.dto.BasePage;
 import hexlet.code.dto.urls.UrlPage;
 import hexlet.code.dto.urls.UrlsPage;
 import hexlet.code.model.UrlModel;
@@ -28,10 +27,9 @@ public class UrlsController {
 
     public static void show(Context context) throws SQLException {
         Long id = context.pathParamAsClass("id", Long.class).get();
-        UrlModel url = UrlRepository.find(id).orElseThrow(() -> new NotFoundResponse("Url has not found"));
+        UrlModel url = UrlRepository.find(id)
+                .orElseThrow(() -> new NotFoundResponse("Url with " + id + " is not found"));
         UrlPage page = new UrlPage(url);
-//        String flash = context.consumeSessionAttribute("flash");
-//        page.setFlash(flash);
         context.render("urls/show.jte", model("page", page));
     }
 

@@ -64,8 +64,10 @@ public class App {
     }
 
     private static String getDatabaseUrl() {
-        return System.getenv().getOrDefault("JDBC_DATABASE_URL",
+        String connect = System.getenv().getOrDefault("JDBC_DATABASE_URL",
                 "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
+        log.info(connect);
+        return connect;
     }
 
     private static TemplateEngine createTemplateEngine() {
