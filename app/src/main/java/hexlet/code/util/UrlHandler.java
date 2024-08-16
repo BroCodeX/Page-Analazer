@@ -6,11 +6,11 @@ import lombok.Getter;
 import java.sql.SQLException;
 
 
-public class UrlChecker {
+public class UrlHandler {
     @Getter
-    private static String message = "Некорректный URL";
+    private static String message;
 
-    public static boolean getCheck(String url) throws SQLException {
+    public static boolean isChecked(String url) throws SQLException {
         if (UrlRepository.find(url).isPresent()) {
             message = "Страница уже существует";
             return false;
