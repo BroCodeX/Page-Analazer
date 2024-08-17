@@ -5,10 +5,13 @@ import hexlet.code.dto.urls.UrlsPage;
 import hexlet.code.model.UrlModel;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
-import hexlet.code.util.UrlHandler;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,18 +37,37 @@ public class UrlsController {
     }
 
     public static void create(Context context) throws SQLException {
-        var name = context.formParamAsClass("url", String.class)
-                .get();
-        if (UrlHandler.isChecked(name)) {
-            UrlModel urlModel = new UrlModel(name, LocalDateTime.now());
-            UrlRepository.save(urlModel);
-            context.sessionAttribute("flash", "Страница успешно добавлена");
-            context.sessionAttribute("flashType", "success");
-            context.redirect(NamedRoutes.urlsPath());
-        } else {
-            context.sessionAttribute("flash", UrlHandler.getMessage());
+        try {
+            var name = context.formParamAsClass("url", String.class)
+                    .get();
+            URI uri = new URI(name);
+            URL url = uri.toURL();
+            String normalizedUrl = getNormalizeUrl(url);
+            if (UrlRepository.find(normalizedUrl).isPresent()) {
+                context.sessionAttribute("flash", "Страница уже существует");
+                context.sessionAttribute("flashType", "danger");
+                context.redirect(NamedRoutes.rootPath());
+            } else {
+                UrlModel urlModel = new UrlModel(normalizedUrl, LocalDateTime.now());
+                UrlRepository.save(urlModel);
+                context.sessionAttribute("flash", "Страница успешно добавлена");
+                context.sessionAttribute("flashType", "success");
+                context.redirect(NamedRoutes.urlsPath());
+            }
+        } catch (MalformedURLException | IllegalArgumentException | URISyntaxException ex) {
+            context.sessionAttribute("flash", "Некорректный URL");
             context.sessionAttribute("flashType", "danger");
             context.redirect(NamedRoutes.rootPath());
         }
+    }
+
+    public static String getNormalizeUrl(URL url) {
+        StringBuilder builder = new StringBuilder();
+        if (url.getPort() != -1) {
+            builder.append(url.getProtocol()).append("://").append(url.getHost());
+            builder.append(":").append(url.getPort());
+            return builder.toString();
+        }
+        return url.getProtocol() + "://" + url.getHost();
     }
 }
