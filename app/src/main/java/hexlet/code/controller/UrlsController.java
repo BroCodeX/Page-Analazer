@@ -62,12 +62,10 @@ public class UrlsController {
     }
 
     public static String getNormalizeUrl(URL url) {
-        StringBuilder builder = new StringBuilder();
+        String baseUrl = String.format("%s://%s", url.getProtocol(), url.getHost());
         if (url.getPort() != -1) {
-            builder.append(url.getProtocol()).append("://").append(url.getHost());
-            builder.append(":").append(url.getPort());
-            return builder.toString();
+            return String.format("%s:%s", baseUrl, url.getPort());
         }
-        return url.getProtocol() + "://" + url.getHost();
+        return baseUrl;
     }
 }
