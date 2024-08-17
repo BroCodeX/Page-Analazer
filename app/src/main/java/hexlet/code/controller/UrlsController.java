@@ -7,6 +7,7 @@ import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
+@Slf4j
 public class UrlsController {
 
     public static void index(Context context) throws SQLException {
@@ -40,9 +42,11 @@ public class UrlsController {
         try {
             var name = context.formParamAsClass("url", String.class)
                     .get();
+            log.info("Переданный урл: {}", name);
             URI uri = new URI(name);
             URL url = uri.toURL();
             String normalizedUrl = getNormalizeUrl(url);
+            log.info(normalizedUrl);
             if (UrlRepository.find(normalizedUrl).isPresent()) {
                 context.sessionAttribute("flash", "Страница уже существует");
                 context.sessionAttribute("flashType", "danger");
@@ -55,6 +59,7 @@ public class UrlsController {
                 context.redirect(NamedRoutes.urlsPath());
             }
         } catch (MalformedURLException | IllegalArgumentException | URISyntaxException ex) {
+            log.error("URL не прошел валидацию");
             context.sessionAttribute("flash", "Некорректный URL");
             context.sessionAttribute("flashType", "danger");
             context.redirect(NamedRoutes.rootPath());
