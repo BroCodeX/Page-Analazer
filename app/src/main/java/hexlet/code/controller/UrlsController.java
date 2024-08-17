@@ -62,7 +62,9 @@ public class UrlsController {
     }
 
     public static String getNormalizeUrl(URL url) {
-        String baseUrl = String.format("%s://%s", url.getProtocol(), url.getHost());
+        String baseUrl = String.format("%s://%s", url.getProtocol(), url.getHost())
+                .toLowerCase()
+                .trim();
         if (url.getPort() != -1) {
             return String.format("%s:%s", baseUrl, url.getPort());
         }
