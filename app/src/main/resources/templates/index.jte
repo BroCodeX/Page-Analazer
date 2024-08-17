@@ -2,15 +2,15 @@
 @import hexlet.code.util.NamedRoutes
 @param UrlPage page
 @template.layout.page(
-    page = page,
+page = page,
 content = @`
     <main class="mx-auto my-5 p-5 bg-white rounded shadow text-center" style="max-width: 900px;">
         <h2 class="fs-1 mb-4 text-dark">Анализатор страниц</h2>
         <p class="fs-5 mb-4 text-secondary">Бесплатно проверяйте сайты на SEO пригодность</p>
         <form action="${NamedRoutes.urlsPath()}" method="post">
-            <div class="mb-3">
-                <label>
-                    <input type="text" placeholder="Введите ссылку" required name="url" class="form-control form-control-lg">
+            <div class="mb-3 w-100">
+                <label class="w-100">
+                    <input type="text" placeholder="Введите ссылку" required name="url" class="form-control form-control-lg w-100">
                 </label>
                 <p class="fs-6 text-muted mt-2">Пример: https://www.example.com</p>
             </div>
@@ -56,6 +56,9 @@ content = @`
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             transform: translateY(-2px);
             transition: box-shadow 0.2s, transform 0.2s;
+        }
+        input[type="text"] {
+            width: 100%;
         }
     </style>
 `
