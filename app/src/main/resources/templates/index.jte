@@ -4,7 +4,7 @@
 @template.layout.page(
 page = page,
 content = @`
-    <main class="mx-auto my-5 p-5 bg-white rounded shadow text-center" style="max-width: 900px;">
+    <main class="mx-auto my-5 p-5 bg-white rounded shadow text-center" style="max-width: 1200px;">
         <h2 class="fs-1 mb-4 text-dark">Анализатор страниц</h2>
         <p class="fs-5 mb-4 text-secondary">Бесплатно проверяйте сайты на SEO пригодность</p>
         <form action="${NamedRoutes.urlsPath()}" method="post">
