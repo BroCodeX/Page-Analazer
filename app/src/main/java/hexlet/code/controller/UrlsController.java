@@ -33,7 +33,7 @@ public class UrlsController {
     public static void show(Context context) throws SQLException {
         Long id = context.pathParamAsClass("id", Long.class).get();
         UrlModel url = UrlRepository.find(id)
-                .orElseThrow(() -> new NotFoundResponse("Url with " + id + " is not found"));
+                .orElseThrow(() -> new NotFoundResponse(String.format("Url with %s is not found", id)));
         UrlPage page = new UrlPage(url);
         context.render("urls/show.jte", model("page", page));
     }

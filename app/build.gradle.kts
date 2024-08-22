@@ -33,6 +33,8 @@ dependencies {
     implementation("com.h2database:h2:2.2.224")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.postgresql:postgresql:42.7.3")
+    implementation("io.javalin:javalin-testtools:6.2.0")
+    testImplementation("org.assertj:assertj-core:3.26.3")
 
 }
 
