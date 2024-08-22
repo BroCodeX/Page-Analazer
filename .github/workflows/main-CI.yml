@@ -24,13 +24,13 @@ jobs:
           distribution: 'oracle'
       - name: Build with Gradle
         run: make build
-      # - name: Build and Push a JaCoCo report
-      #   uses: paambaati/codeclimate-action@v5.0.0
-      #   env:
-      #     CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-      #     JACOCO_SOURCE_PATH: "${{github.workspace}}/app/src/main/java"
-      #   with: 
-      #     coverageCommand: make report
-      #     coverageLocations: ${{github.workspace}}/app/build/reports/jacoco/test/jacocoTestReport.xml:jacoco
-      #     coverageInputType: jacoco
+      - name: Build and Push a JaCoCo report
+        uses: paambaati/codeclimate-action@v5.0.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+          JACOCO_SOURCE_PATH: "${{github.workspace}}/app/src/main/java"
+        with: 
+          coverageCommand: make report
+          coverageLocations: ${{github.workspace}}/app/build/reports/jacoco/test/jacocoTestReport.xml:jacoco
+          coverageInputType: jacoco
       
