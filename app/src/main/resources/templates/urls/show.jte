@@ -19,13 +19,13 @@ content = @`
             </tr>
             <tr>
                 <td>Дата создания</td>
-                <td>${page.getUrlModel().getCreatedAt().toString()}</td>
+                <td>${page.getUrlModel().getFormattedDate()}</td>
             </tr>
             </tbody>
         </table>
 
         <h2 class="fs-1 mb-5 mt-5 text-dark">Проверки</h2>
-        <form method="post" action=${NamedRoutes.checksPath(page.getUrlModel().getId())}>
+        <form method="post" action="${NamedRoutes.checksPath(page.getUrlModel().getId())}">
             <button type="submit" class="btn btn-success btn-lg px-5">Запустить проверку</button>
         </form>
 

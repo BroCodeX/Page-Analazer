@@ -25,7 +25,7 @@ content = @`
                         <a href="${NamedRoutes.urlPath(url.getId())}">${url.getName()}</a>
                     </td>
                     <td>${url.getCreatedAt().toString()}</td>
-                    <td>${url.getId()}</td>
+                    <td>Код ответа</td>
                 </tr>
             @endfor
             </tbody>
