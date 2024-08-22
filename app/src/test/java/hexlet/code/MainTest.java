@@ -3,15 +3,16 @@ package hexlet.code;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
+import io.javalin.http.NotFoundResponse;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
 import org.junit.jupiter.api.Test;
 
@@ -47,7 +48,7 @@ public class MainTest {
             var request = "url=https://some-domain.org/example/path";
             client.post(NamedRoutes.urlsPath(), request);
             Long id = UrlRepository.find("https://some-domain.org")
-                    .get()
+                    .orElseThrow(NotFoundResponse::new)
                     .getId();
             var response = client.get(NamedRoutes.urlPath(id));
             assertThat(response.code()).isEqualTo(200);
