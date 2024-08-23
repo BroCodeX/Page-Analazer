@@ -7,6 +7,8 @@ import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.Unirest;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.MalformedURLException;
@@ -66,8 +68,11 @@ public class UrlsController {
         }
     }
 
-    public static void check(Context context) {
-
+    public static void check(Context context) throws SQLException {
+        Long id = context.pathParamAsClass("id", Long.class).get();
+        HttpResponse<String> response = Unirest.get(UrlRepository.find(id).get().getName()).asString();
+        String body = response.getBody();
+        log.info(body);
     }
 
     public static String getNormalizeUrl(URL url) {

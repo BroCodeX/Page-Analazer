@@ -36,7 +36,7 @@ dependencies {
     implementation("io.javalin:javalin-testtools:6.2.0")
     testImplementation("org.assertj:assertj-core:3.26.3")
     // https://mvnrepository.com/artifact/com.konghq/unirest-java-core
-    compileOnly("com.konghq:unirest-java-core:4.4.4")
+    implementation("com.konghq:unirest-java-core:4.4.4")
 
 
 }
