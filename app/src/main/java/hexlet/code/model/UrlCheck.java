@@ -16,6 +16,15 @@ public class UrlCheck {
     private String description;
     private Long urlId;
     private LocalDateTime createdAt;
+    private UrlModel url;
+
+    public UrlCheck(String title, String h1, String description, LocalDateTime createdAt, UrlModel url) {
+        this.title = title;
+        this.h1 = h1;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.url = url;
+    }
 
     public String getFormattedDate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");

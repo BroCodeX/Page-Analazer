@@ -66,6 +66,10 @@ public class UrlsController {
         }
     }
 
+    public static void check(Context context) {
+
+    }
+
     public static String getNormalizeUrl(URL url) {
         String baseUrl = String.format("%s://%s", url.getProtocol(), url.getHost())
                 .toLowerCase()

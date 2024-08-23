@@ -41,14 +41,19 @@ content = @`
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>${page.getUrlModel().getId()}</td>
-                <td>Код ответа</td>
-                <td>Title</td>
-                <td>H1</td>
-                <td>Description</td>
-                <td>Дата проверки</td>
-            </tr>
+            @if(page.getUrlModel().getUrlChecksId() != null && !page.getUrlModel().getUrlChecksId().isEmpty())
+                @for(var check : page.getUrlModel().getUrlChecksId())
+                    <tr>
+                        <td>${check.getId()}</td>
+                        <td>${check.getStatusCode()}</td>
+                        <td>${check.getTitle()}</td>
+                        <td>${check.getH1()}</td>
+                        <td>${check.getDescription()}</td>
+                        <td>${check.getFormattedDate()}</td>
+                    </tr>
+                @endfor
+            @endif
+
             </tbody>
         </table>
     </main>
