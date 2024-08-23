@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -18,6 +19,7 @@ public class UrlModel {
     public UrlModel(String name, LocalDateTime createdAt) {
         this.name = name;
         this.createdAt = createdAt;
+        urlChecksId = new ArrayList<>();
     }
 
     public String getFormattedDate() {
@@ -26,8 +28,12 @@ public class UrlModel {
     }
 
     public void addCheck(UrlCheck check) {
-        check.setUrlId(id);
+        check.setUrlId(this.id);
         urlChecksId.add(check);
+    }
+
+    public void addChecks(List<UrlCheck> checks) {
+        urlChecksId.addAll(checks);
     }
 
     public void deleteCheck(UrlCheck check) {

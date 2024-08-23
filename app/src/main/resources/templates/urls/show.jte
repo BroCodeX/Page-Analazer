@@ -3,6 +3,7 @@
 @param UrlPage page
 
 @template.layout.page(
+page = page,
 content = @`
     <main class="mx-auto my-5 p-5 bg-white rounded shadow text-left" style="max-width: 1200px; width: 90%;">
         <h1 class="fs-1 mb-4 text-dark">Сайт: ${page.getUrlModel().getName()}</h1>
@@ -53,7 +54,6 @@ content = @`
                     </tr>
                 @endfor
             @endif
-
             </tbody>
         </table>
     </main>

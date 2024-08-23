@@ -39,6 +39,11 @@ public class UrlsController {
         UrlModel url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse(String.format("Url with %s is not found", id)));
         UrlPage page = new UrlPage(url);
+        if (!CheckRepository.getEntries().isEmpty()) {
+            url.addChecks(CheckRepository.getEntries());
+        }
+        page.setFlash(context.consumeSessionAttribute("flash"));
+        page.setFlashType(context.consumeSessionAttribute("flashType"));
         context.render("urls/show.jte", model("page", page));
     }
 
@@ -73,12 +78,16 @@ public class UrlsController {
     public static void check(Context context) throws SQLException {
         Long id = context.pathParamAsClass("id", Long.class).get();
         UrlModel url = UrlRepository.find(id).get();
+        log.info(url.getName());
+        log.info(url.getId().toString());
         HttpResponse<String> response = Unirest.get(url.getName()).asString();
         String title = "title";
         String h1 = "h1";
         String description = "description";
         LocalDateTime createdAtCheck = LocalDateTime.now();
-        UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, url, url.getId());
+
+        UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, url);
+        check.setUrlId(url.getId());
         CheckRepository.save(check);
         url.addCheck(check);
         String body = response.getBody();
@@ -86,7 +95,8 @@ public class UrlsController {
         UrlPage page = new UrlPage(url);
         context.sessionAttribute("flash", "Страница успешно проверена");
         context.sessionAttribute("flashType", "success");
-        context.render("urls/show.jte", model("page", page));
+        context.redirect(NamedRoutes.urlPath(id));
+//        context.render("urls/show.jte", model("page", page));
     }
 
     public static String getNormalizeUrl(URL url) {

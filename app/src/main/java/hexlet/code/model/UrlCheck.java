@@ -18,13 +18,12 @@ public class UrlCheck {
     private LocalDateTime createdAt;
     private UrlModel url;
 
-    public UrlCheck(String title, String h1, String description, LocalDateTime createdAt, UrlModel url, Long urlId) {
+    public UrlCheck(String title, String h1, String description, LocalDateTime createdAt, UrlModel url) {
         this.title = title;
         this.h1 = h1;
         this.description = description;
         this.createdAt = createdAt;
         this.url = url;
-        this.urlId = urlId;
     }
 
     public String getFormattedDate() {
