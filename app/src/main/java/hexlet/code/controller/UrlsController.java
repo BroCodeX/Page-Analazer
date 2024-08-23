@@ -2,7 +2,9 @@ package hexlet.code.controller;
 
 import hexlet.code.dto.urls.UrlPage;
 import hexlet.code.dto.urls.UrlsPage;
+import hexlet.code.model.UrlCheck;
 import hexlet.code.model.UrlModel;
+import hexlet.code.repository.CheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
@@ -70,9 +72,21 @@ public class UrlsController {
 
     public static void check(Context context) throws SQLException {
         Long id = context.pathParamAsClass("id", Long.class).get();
-        HttpResponse<String> response = Unirest.get(UrlRepository.find(id).get().getName()).asString();
+        UrlModel url = UrlRepository.find(id).get();
+        HttpResponse<String> response = Unirest.get(url.getName()).asString();
+        String title = "title";
+        String h1 = "h1";
+        String description = "description";
+        LocalDateTime createdAtCheck = LocalDateTime.now();
+        UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, url, url.getId());
+        CheckRepository.save(check);
+        url.addCheck(check);
         String body = response.getBody();
         log.info(body);
+        UrlPage page = new UrlPage(url);
+        context.sessionAttribute("flash", "Страница успешно проверена");
+        context.sessionAttribute("flashType", "success");
+        context.render("urls/show.jte", model("page", page));
     }
 
     public static String getNormalizeUrl(URL url) {

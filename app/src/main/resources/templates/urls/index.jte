@@ -24,7 +24,7 @@ content = @`
                     <td>
                         <a href="${NamedRoutes.urlPath(url.getId())}">${url.getName()}</a>
                     </td>
-                    <td>${url.getCreatedAt().toString()}</td>
+                    <td>${url.getFormattedDate()}</td>
                     <td>Код ответа</td>
                 </tr>
             @endfor

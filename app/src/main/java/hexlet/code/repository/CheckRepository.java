@@ -1,5 +1,6 @@
 package hexlet.code.repository;
 
+import hexlet.code.model.UrlCheck;
 import hexlet.code.model.UrlModel;
 
 import java.sql.ResultSet;
@@ -13,18 +14,22 @@ import java.util.Optional;
 
 public class CheckRepository extends BaseRepository {
 
-    public static void save(UrlModel urlModel) throws SQLException {
-        String sql = "INSERT INTO urls (name, created_at) VALUES (?, ?)";
+    public static void save(UrlCheck check) throws SQLException {
+        String sql = "INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
         try (var conn = dataSource.getConnection();
                 var preparedStmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStmt.setString(1, urlModel.getName());
-            LocalDateTime createdAt = urlModel.getCreatedAt();
-            preparedStmt.setTimestamp(2, Timestamp.valueOf(createdAt));
+            preparedStmt.setLong(1, check.getUrlId());
+            preparedStmt.setInt(2, check.getStatusCode());
+            preparedStmt.setString(3, check.getH1());
+            preparedStmt.setString(4, check.getTitle());
+            preparedStmt.setString(5, check.getDescription());
+            preparedStmt.setTimestamp(6, Timestamp.valueOf(check.getCreatedAt()));
 
             preparedStmt.executeUpdate();
             var generatedKeys = preparedStmt.getGeneratedKeys();
             if (generatedKeys.next()) {
-                urlModel.setId(generatedKeys.getLong(1));
+                check.setId(generatedKeys.getLong(1));
             } else {
                 throw new SQLException("DB has not returned an id for the insert");
             }
