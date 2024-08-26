@@ -4,21 +4,37 @@ import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.http.NotFoundResponse;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.HttpUrl;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.javalin.testtools.JavalinTest;
 import org.junit.jupiter.api.Test;
 
+@Slf4j
 public class MainTest {
-
     Javalin app;
+    static MockWebServer mockWebServer;
+    static HttpUrl baseUrl;
+
+    @BeforeAll
+    public static void startMockWebServer() {
+        mockWebServer = new MockWebServer();
+        baseUrl = mockWebServer.url("/");
+        log.info(baseUrl.toString());
+    }
+
 
     @BeforeEach
     public final void getApp() throws SQLException, IOException {
@@ -35,7 +51,7 @@ public class MainTest {
     }
 
     @Test
-    public void testUrlsIndexPage() {
+    public void testIndexPage() {
         JavalinTest.test(app, (server, client) -> {
             var response = client.get(NamedRoutes.urlsPath());
             assertThat(response.code()).isEqualTo(200);
@@ -83,5 +99,17 @@ public class MainTest {
             assertThat(responseFail.code()).isEqualTo(200);
             assertFalse(responseFail.body().string().contains("badUrlHere"));
         });
+    }
+
+    @Test
+    public void testCheckUrl() throws InterruptedException {
+        MockResponse mockResponse1 = new MockResponse().setBody("Анализатор страниц");
+        mockWebServer.enqueue(mockResponse1);
+        log.info(mockWebServer.getHostName());
+    }
+
+    @AfterAll
+    public static void shutdownMockWebServer() throws IOException {
+        mockWebServer.shutdown();
     }
 }

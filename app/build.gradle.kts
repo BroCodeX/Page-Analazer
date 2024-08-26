@@ -37,6 +37,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.26.3")
     // https://mvnrepository.com/artifact/com.konghq/unirest-java-core
     implementation("com.konghq:unirest-java-core:4.4.4")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 
 
 }
