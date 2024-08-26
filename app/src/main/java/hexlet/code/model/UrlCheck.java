@@ -16,14 +16,15 @@ public class UrlCheck {
     private String description;
     private Long urlId;
     private LocalDateTime createdAt;
-    private UrlModel url;
+//    private UrlModel url;
 
-    public UrlCheck(String title, String h1, String description, LocalDateTime createdAt, UrlModel url) {
+    public UrlCheck(String title, String h1, String description, LocalDateTime createdAt, int statusCode) {
         this.title = title;
         this.h1 = h1;
         this.description = description;
         this.createdAt = createdAt;
-        this.url = url;
+        this.statusCode = statusCode;
+//        this.url = url;
     }
 
     public String getFormattedDate() {

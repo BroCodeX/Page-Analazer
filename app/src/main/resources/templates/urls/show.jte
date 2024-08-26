@@ -3,6 +3,7 @@
 @param UrlPage page
 
 @template.layout.page(
+page = page,
 content = @`
     <main class="mx-auto my-5 p-5 bg-white rounded shadow text-left" style="max-width: 1200px; width: 90%;">
         <h1 class="fs-1 mb-4 text-dark">Сайт: ${page.getUrlModel().getName()}</h1>
@@ -41,8 +42,8 @@ content = @`
             </tr>
             </thead>
             <tbody>
-            @if(page.getUrlModel().getUrlChecksId() != null && !page.getUrlModel().getUrlChecksId().isEmpty())
-                @for(var check : page.getUrlModel().getUrlChecksId())
+            @if(page.getUrlModel().getUrlChecks() != null && !page.getUrlModel().getUrlChecks().isEmpty())
+                @for(var check : page.getUrlModel().getUrlChecks())
                     <tr>
                         <td>${check.getId()}</td>
                         <td>${check.getStatusCode()}</td>
@@ -53,7 +54,6 @@ content = @`
                     </tr>
                 @endfor
             @endif
-
             </tbody>
         </table>
     </main>
