@@ -38,13 +38,11 @@ public class UrlsController {
         Long id = context.pathParamAsClass("id", Long.class).get();
         UrlModel url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse(String.format("Url with %s is not found", id)));
-        UrlPage page = new UrlPage(url);
-//        if (!CheckRepository.getEntries().isEmpty()) {
-//            url.addChecks(CheckRepository.getEntries());
-//        }
-        if (CheckRepository.find(id).isPresent()) {
-            url.addCheck(CheckRepository.find(id).get());
+        if (!CheckRepository.findEntries(id).isEmpty()) {
+            url.addChecks(CheckRepository.findEntries(id));
         }
+
+        UrlPage page = new UrlPage(url);
         page.setFlash(context.consumeSessionAttribute("flash"));
         page.setFlashType(context.consumeSessionAttribute("flashType"));
         context.render("urls/show.jte", model("page", page));
@@ -81,11 +79,9 @@ public class UrlsController {
     public static void check(Context context) throws SQLException {
         Long id = context.pathParamAsClass("id", Long.class).get();
         UrlModel url = UrlRepository.find(id).get();
-        log.info(url.getId().toString());
-        log.info(url.getName());
-        HttpResponse<String> response = Unirest.get(url.getName()).asString();
-        String body = response.getBody();
-        log.info(body);
+//        HttpResponse<String> response = Unirest.get(url.getName()).asString();
+//        String body = response.getBody();
+//        log.info(body);
 
         String title = "title";
         String h1 = "h1";

@@ -36,19 +36,19 @@ public class CheckRepository extends BaseRepository {
         }
     }
 
-    public static Optional<UrlCheck> find(Long id) throws SQLException {
+    public static Optional<UrlCheck> find(Long urlId) throws SQLException {
         String sql = "SELECT * FROM url_checks WHERE url_id = ?";
         try (var conn = dataSource.getConnection();
                 var preparedStmt = conn.prepareStatement(sql)) {
-            preparedStmt.setLong(1, id);
+            preparedStmt.setLong(1, urlId);
             ResultSet set = preparedStmt.executeQuery();
             if (set.next()) {
+                Long id = set.getLong("id");
                 String title = set.getNString("title");
                 String h1 = set.getNString("h1");
                 String description = set.getNString("description");
                 LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
                 int statusCode = set.getInt("status_code");
-//                UrlModel url = UrlRepository.find(id).get();
                 UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, statusCode);
                 check.setId(id);
                 return Optional.of(check);
@@ -57,25 +57,6 @@ public class CheckRepository extends BaseRepository {
             }
         }
     }
-
-//    public static Optional<UrlModel> find(String url) throws SQLException {
-//        String sql = "SELECT * FROM urls WHERE name = ?";
-//        try (var conn = dataSource.getConnection();
-//             var preparedStmt = conn.prepareStatement(sql)) {
-//            preparedStmt.setString(1, url);
-//            ResultSet set = preparedStmt.executeQuery();
-//            if (set.next()) {
-//                String name = set.getString("name");
-//                LocalDateTime createdAt = set.getTimestamp("created_at").toLocalDateTime();
-//                Long id = set.getLong("id");
-//                UrlModel urlModel = new UrlModel(name, createdAt);
-//                urlModel.setId(id);
-//                return Optional.of(urlModel);
-//            } else {
-//                return Optional.empty();
-//            }
-//        }
-//    }
 
     public static List<UrlCheck> getEntries() throws SQLException {
         String sql = "SELECT * FROM url_checks";
@@ -89,7 +70,28 @@ public class CheckRepository extends BaseRepository {
                 String h1 = set.getNString("h1");
                 String description = set.getNString("description");
                 LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
-//                UrlModel url = UrlRepository.find(id).get();
+                int statusCode = set.getInt("status_code");
+                UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, statusCode);
+                check.setId(id);
+                result.add(check);
+            }
+            return result;
+        }
+    }
+
+    public static List<UrlCheck> findEntries(Long urlId) throws SQLException {
+        String sql = "SELECT * FROM url_checks WHERE url_id = ?";
+        try (var conn = dataSource.getConnection();
+             var preparedStmt = conn.prepareStatement(sql)) {
+            preparedStmt.setLong(1, urlId);
+            ResultSet set = preparedStmt.executeQuery();
+            List<UrlCheck> result = new ArrayList<>();
+            while (set.next()) {
+                Long id = set.getLong("id");
+                String title = set.getNString("title");
+                String h1 = set.getNString("h1");
+                String description = set.getNString("description");
+                LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
                 int statusCode = set.getInt("status_code");
                 UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, statusCode);
                 check.setId(id);

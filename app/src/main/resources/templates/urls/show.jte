@@ -42,8 +42,8 @@ content = @`
             </tr>
             </thead>
             <tbody>
-            @if(page.getUrlModel().getUrlChecksId() != null && !page.getUrlModel().getUrlChecksId().isEmpty())
-                @for(var check : page.getUrlModel().getUrlChecksId())
+            @if(page.getUrlModel().getUrlChecks() != null && !page.getUrlModel().getUrlChecks().isEmpty())
+                @for(var check : page.getUrlModel().getUrlChecks())
                     <tr>
                         <td>${check.getId()}</td>
                         <td>${check.getStatusCode()}</td>

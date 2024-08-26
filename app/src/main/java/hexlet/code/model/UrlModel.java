@@ -14,12 +14,12 @@ public class UrlModel {
     private Long id;
     private String name;
     private LocalDateTime createdAt;
-    private List<UrlCheck> urlChecksId;
+    private List<UrlCheck> urlChecks;
 
     public UrlModel(String name, LocalDateTime createdAt) {
         this.name = name;
         this.createdAt = createdAt;
-        urlChecksId = new ArrayList<>();
+        urlChecks = new ArrayList<>();
     }
 
     public String getFormattedDate() {
@@ -29,15 +29,15 @@ public class UrlModel {
 
     public void addCheck(UrlCheck check) {
 //        check.setUrlId(this.id);
-        urlChecksId.add(check);
+        urlChecks.add(check);
     }
 
     public void addChecks(List<UrlCheck> checks) {
-        urlChecksId.addAll(checks);
+        urlChecks.addAll(checks);
     }
 
     public void deleteCheck(UrlCheck check) {
         check.setUrlId(null);
-        urlChecksId.remove(check);
+        urlChecks.remove(check);
     }
 }
