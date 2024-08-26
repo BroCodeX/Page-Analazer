@@ -92,7 +92,6 @@ public class UrlsController {
             String title = "title";
             String h1 = "h1";
             String description = "description";
-//        int statusCode = response.getStatus();
             Unirest.config().connectTimeout(5000);
             int statusCode = Unirest.get(url.getName()).asString().getStatus();
             LocalDateTime createdAtCheck = LocalDateTime.now();
