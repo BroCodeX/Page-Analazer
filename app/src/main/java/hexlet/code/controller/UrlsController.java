@@ -19,6 +19,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
@@ -27,7 +28,13 @@ import static io.javalin.rendering.template.TemplateUtil.model;
 public class UrlsController {
 
     public static void index(Context context) throws SQLException {
-        List<UrlModel> urlModels = UrlRepository.getEntries();
+        LinkedList<UrlModel> urlModels = UrlRepository.getEntries();
+        if (!CheckRepository.getEntries().isEmpty()) {
+            for (UrlModel url : urlModels) {
+                Long id = url.getId();
+                url.addCheck(CheckRepository.find(id).orElse(null));
+            }
+        }
         UrlsPage page = new UrlsPage(urlModels);
         page.setFlash(context.consumeSessionAttribute("flash"));
         page.setFlashType(context.consumeSessionAttribute("flashType"));
@@ -79,14 +86,14 @@ public class UrlsController {
     public static void check(Context context) throws SQLException {
         Long id = context.pathParamAsClass("id", Long.class).get();
         UrlModel url = UrlRepository.find(id).get();
-//        HttpResponse<String> response = Unirest.get(url.getName()).asString();
+        HttpResponse<String> response = Unirest.get(url.getName()).asString();
 //        String body = response.getBody();
 //        log.info(body);
 
         String title = "title";
         String h1 = "h1";
         String description = "description";
-        int statusCode = 200;
+        int statusCode = response.getStatus();
         LocalDateTime createdAtCheck = LocalDateTime.now();
 
         UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, statusCode);

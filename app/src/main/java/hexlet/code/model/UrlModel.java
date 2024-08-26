@@ -5,7 +5,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Getter
@@ -14,12 +14,12 @@ public class UrlModel {
     private Long id;
     private String name;
     private LocalDateTime createdAt;
-    private List<UrlCheck> urlChecks;
+    private LinkedList<UrlCheck> urlChecks;
 
     public UrlModel(String name, LocalDateTime createdAt) {
         this.name = name;
         this.createdAt = createdAt;
-        urlChecks = new ArrayList<>();
+        urlChecks = new LinkedList<>();
     }
 
     public String getFormattedDate() {
@@ -32,7 +32,7 @@ public class UrlModel {
         urlChecks.add(check);
     }
 
-    public void addChecks(List<UrlCheck> checks) {
+    public void addChecks(LinkedList<UrlCheck> checks) {
         urlChecks.addAll(checks);
     }
 
