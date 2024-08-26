@@ -4,6 +4,7 @@ import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.http.NotFoundResponse;
+import kong.unirest.core.Unirest;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
@@ -105,7 +106,9 @@ public class MainTest {
     public void testCheckUrl() throws InterruptedException {
         MockResponse mockResponse1 = new MockResponse().setBody("Анализатор страниц");
         mockWebServer.enqueue(mockResponse1);
-        log.info(mockWebServer.getHostName());
+
+        String body = Unirest.get(baseUrl.toString()).asString().getBody();
+        log.info(body);
     }
 
     @AfterAll

@@ -11,6 +11,7 @@ import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Unirest;
+import kong.unirest.core.UnirestException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.MalformedURLException;
@@ -87,23 +88,28 @@ public class UrlsController {
     public static void check(Context context) throws SQLException {
         Long id = context.pathParamAsClass("id", Long.class).get();
         UrlModel url = UrlRepository.find(id).get();
-//        HttpResponse<String> response = Unirest.get(url.getName()).asString();
-
-        String title = "title";
-        String h1 = "h1";
-        String description = "description";
+        try {
+            String title = "title";
+            String h1 = "h1";
+            String description = "description";
 //        int statusCode = response.getStatus();
-        int statusCode = 200;
-        LocalDateTime createdAtCheck = LocalDateTime.now();
+            Unirest.config().connectTimeout(5000);
+            int statusCode = Unirest.get(url.getName()).asString().getStatus();
+            LocalDateTime createdAtCheck = LocalDateTime.now();
 
-        UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, statusCode);
-        check.setUrlId(url.getId());
-        CheckRepository.save(check);
-        url.addCheck(check);
+            UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, statusCode);
+            check.setUrlId(url.getId());
+            CheckRepository.save(check);
+            url.addCheck(check);
 
-        context.sessionAttribute("flash", "Страница успешно проверена");
-        context.sessionAttribute("flashType", "success");
-        context.redirect(NamedRoutes.urlPath(id));
+            context.sessionAttribute("flash", "Страница успешно проверена");
+            context.sessionAttribute("flashType", "success");
+            context.redirect(NamedRoutes.urlPath(id));
+        } catch (UnirestException ex) {
+            context.sessionAttribute("flash", "Timeout. Проверьте доступность домена");
+            context.sessionAttribute("flashType", "danger");
+            context.redirect(NamedRoutes.urlPath(id));
+        }
     }
 
     public static String getNormalizeUrl(URL url) {
