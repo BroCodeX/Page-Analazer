@@ -47,8 +47,9 @@ public class CheckRepository extends BaseRepository {
                 String h1 = set.getNString("h1");
                 String description = set.getNString("description");
                 LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
-                UrlModel url = UrlRepository.find(id).get();
-                UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, url);
+                int statusCode = set.getInt("status_code");
+//                UrlModel url = UrlRepository.find(id).get();
+                UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, statusCode);
                 check.setId(id);
                 return Optional.of(check);
             } else {
@@ -88,8 +89,9 @@ public class CheckRepository extends BaseRepository {
                 String h1 = set.getNString("h1");
                 String description = set.getNString("description");
                 LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
-                UrlModel url = UrlRepository.find(id).get();
-                UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, url);
+//                UrlModel url = UrlRepository.find(id).get();
+                int statusCode = set.getInt("status_code");
+                UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, statusCode);
                 check.setId(id);
                 result.add(check);
             }

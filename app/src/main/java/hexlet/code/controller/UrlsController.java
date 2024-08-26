@@ -39,8 +39,11 @@ public class UrlsController {
         UrlModel url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse(String.format("Url with %s is not found", id)));
         UrlPage page = new UrlPage(url);
-        if (!CheckRepository.getEntries().isEmpty()) {
-            url.addChecks(CheckRepository.getEntries());
+//        if (!CheckRepository.getEntries().isEmpty()) {
+//            url.addChecks(CheckRepository.getEntries());
+//        }
+        if (CheckRepository.find(id).isPresent()) {
+            url.addCheck(CheckRepository.find(id).get());
         }
         page.setFlash(context.consumeSessionAttribute("flash"));
         page.setFlashType(context.consumeSessionAttribute("flashType"));
@@ -78,21 +81,24 @@ public class UrlsController {
     public static void check(Context context) throws SQLException {
         Long id = context.pathParamAsClass("id", Long.class).get();
         UrlModel url = UrlRepository.find(id).get();
-        log.info(url.getName());
         log.info(url.getId().toString());
+        log.info(url.getName());
         HttpResponse<String> response = Unirest.get(url.getName()).asString();
+        String body = response.getBody();
+        log.info(body);
+
         String title = "title";
         String h1 = "h1";
         String description = "description";
+        int statusCode = 200;
         LocalDateTime createdAtCheck = LocalDateTime.now();
 
-        UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, url);
+        UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, statusCode);
         check.setUrlId(url.getId());
         CheckRepository.save(check);
         url.addCheck(check);
-        String body = response.getBody();
-        log.info(body);
-        UrlPage page = new UrlPage(url);
+
+//        UrlPage page = new UrlPage(url);
         context.sessionAttribute("flash", "Страница успешно проверена");
         context.sessionAttribute("flashType", "success");
         context.redirect(NamedRoutes.urlPath(id));
