@@ -32,7 +32,8 @@ public class UrlsController {
         if (!CheckRepository.getEntries().isEmpty()) {
             for (UrlModel url : urlModels) {
                 Long id = url.getId();
-                url.addCheck(CheckRepository.find(id).orElse(null));
+                LinkedList<UrlCheck> checks = CheckRepository.findEntries(id);
+                url.addCheck(checks.peekLast());
             }
         }
         UrlsPage page = new UrlsPage(urlModels);
@@ -86,14 +87,13 @@ public class UrlsController {
     public static void check(Context context) throws SQLException {
         Long id = context.pathParamAsClass("id", Long.class).get();
         UrlModel url = UrlRepository.find(id).get();
-        HttpResponse<String> response = Unirest.get(url.getName()).asString();
-//        String body = response.getBody();
-//        log.info(body);
+//        HttpResponse<String> response = Unirest.get(url.getName()).asString();
 
         String title = "title";
         String h1 = "h1";
         String description = "description";
-        int statusCode = response.getStatus();
+//        int statusCode = response.getStatus();
+        int statusCode = 200;
         LocalDateTime createdAtCheck = LocalDateTime.now();
 
         UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, statusCode);
@@ -101,11 +101,9 @@ public class UrlsController {
         CheckRepository.save(check);
         url.addCheck(check);
 
-//        UrlPage page = new UrlPage(url);
         context.sessionAttribute("flash", "Страница успешно проверена");
         context.sessionAttribute("flashType", "success");
         context.redirect(NamedRoutes.urlPath(id));
-//        context.render("urls/show.jte", model("page", page));
     }
 
     public static String getNormalizeUrl(URL url) {
