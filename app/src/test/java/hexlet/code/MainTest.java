@@ -1,5 +1,6 @@
 package hexlet.code;
 
+import hexlet.code.controller.UrlsController;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
@@ -115,24 +116,23 @@ public class MainTest {
             var response = client.post(NamedRoutes.urlsPath(), request);
             assertThat(response.code()).isEqualTo(200);
 
-            //Делаем ???
-//            HttpUrl baseUrlTest = testServer.url(baseUrl.toString() + "urls/1");
-//            log.info("baseUrl===" + baseUrlTest.toString());
-
             //Основной тест кейс
             var request2 = NamedRoutes.checksPath("1");
             log.info("request2===" + request2);
             var responseCheck = client.post(request2);
+            var responseCheckBody = responseCheck.body().string();
 //            HttpResponse<String> responseCheck = Unirest.post("urls/{id}/checks")
 //                    .routeParam("id", "1")
 //                    .field("url", url1)
 //                    .asString();
-            assertThat(responseCheck.body().string()).contains("https://ya.ru");
+//            assertThat(responseCheckBody).contains("https://ya.ru");
             assertThat(responseCheck.code()).isEqualTo(200);
-            assertThat(responseCheck.body().string()).contains("<td>200</td>");
-//            assertThat(responseCheck.body().string()).contains("<td>" + baseUrl.toString() + "</td>");
+            assertThat(responseCheckBody).contains("<td>200</td>");
+            assertThat(responseCheckBody).contains("<td>" + baseUrl
+                    .toString()
+                    .replaceAll("/+$", "") + "</td>");
 //
-            assertThat(responseCheck.body().string()).contains("https://ya.ru");
+//            assertThat(responseCheckBody).contains("https://ya.ru");
 //            assertThat(responseCheck.body().string()).contains("<td>https://ya.ru</td>");
 
         });
