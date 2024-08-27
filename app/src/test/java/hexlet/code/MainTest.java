@@ -4,6 +4,7 @@ import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.http.NotFoundResponse;
+import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Unirest;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.HttpUrl;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,7 +34,7 @@ public class MainTest {
     @BeforeAll
     public static void startMockWebServer() {
         mockWebServer = new MockWebServer();
-        baseUrl = mockWebServer.url("/");
+        baseUrl = mockWebServer.url("/ya.hello");
         log.info(baseUrl.toString());
     }
 
@@ -104,11 +106,40 @@ public class MainTest {
 
     @Test
     public void testCheckUrl() throws InterruptedException {
-        MockResponse mockResponse1 = new MockResponse().setBody("Анализатор страниц");
-        mockWebServer.enqueue(mockResponse1);
+        JavalinTest.test(app, (server, client) -> {
+            // Кидаем тестовый кейс в бд, урл генерим для Mock
+            var request = "url=" + baseUrl.toString();
+            var response = client.post(NamedRoutes.urlsPath(), request);
+            assertThat(response.code()).isEqualTo(200);
 
-        String body = Unirest.get(baseUrl.toString()).asString().getBody();
-        log.info(body);
+            // Генерим тут страницу
+            baseUrl = mockWebServer.url(baseUrl.toString() + "urls/1");
+            log.info("baseUrl===" + baseUrl.toString());
+            MockResponse mockResponse1 = new MockResponse().setBody("https://ya.ru");
+//            MockResponse mockResponse2 = new MockResponse().setBody("title=ya.ru");
+//            MockResponse mockResponse3 = new MockResponse().setBody("h1=ya.ru");
+            MockResponse mockResponse4 = new MockResponse().setStatus("200");
+//            MockResponse mockResponse5 = new MockResponse().setBody("description=yandex");
+            mockWebServer.enqueue(mockResponse1);
+//            mockWebServer.enqueue(mockResponse2);
+//            mockWebServer.enqueue(mockResponse3);
+            mockWebServer.enqueue(mockResponse4);
+//            mockWebServer.enqueue(mockResponse5);
+
+
+
+            var request2 = baseUrl.toString() + "/checks";
+            log.info("request2===" + request2);
+            var responseCheck = client.post(request2);
+//            HttpResponse<String> responseCheck = Unirest.post("urls/{id}/checks")
+//                    .routeParam("id", "1")
+//                    .field("url", url1)
+//                    .asString();
+
+            assertThat(responseCheck.body().string()).contains("https://ya.ru");
+            assertThat(responseCheck.body().string()).contains("<td>https://ya.ru</td>");
+            assertThat(responseCheck.body().string()).contains("<td>200</td>");
+        });
     }
 
     @AfterAll
