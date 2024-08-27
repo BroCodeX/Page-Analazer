@@ -1,6 +1,5 @@
 package hexlet.code;
 
-import hexlet.code.controller.UrlsController;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
@@ -25,11 +24,11 @@ import org.junit.jupiter.api.Test;
 @Slf4j
 public class MainTest {
     Javalin app;
-    static MockWebServer testServer;
+    static MockWebServer mockServer;
 
     @BeforeAll
     public static void startMockWebServer() {
-        testServer = new MockWebServer();
+        mockServer = new MockWebServer();
     }
 
 
@@ -99,47 +98,53 @@ public class MainTest {
     }
 
     @Test
-    public void testCheckUrl() throws InterruptedException {
+    public void testCheckUrl() {
         JavalinTest.test(app, (server, client) -> {
-            //Делаем конфиг базового урла
-            HttpUrl baseUrl = testServer.url("/");
-            log.info("baseUrl===" + baseUrl.toString());
+            //Генерим тут страницу в Мок для передачи приложению
+            StringBuilder htmlContent = new StringBuilder()
+                    .append("<html>")
+                    .append("<head>")
+                    .append("<title>https://ya.title</title>")
+                    .append("<meta name=\"description\" content=\"Yandex-description\">")
+                    .append("</head>")
+                    .append("<body>")
+                    .append("<h1>Yandex-H1</h1>")
+                    .append("</body>")
+                    .append("</html>");
+            MockResponse mockResponse = new MockResponse().setResponseCode(201)
+                    .setBody(htmlContent.toString());
+            mockServer.enqueue(mockResponse);
+            mockServer.start();
 
-            //Генерим тут страницу в Мок для выдачи тесту
-            MockResponse mockResponse1 = new MockResponse().setBody("https://ya.ru");
-            MockResponse mockResponse2 = new MockResponse().setStatus("200");
-            testServer.enqueue(mockResponse1);
-            testServer.enqueue(mockResponse2);
+            //Устанавливаем базовый урл серверу
+            HttpUrl baseUrl = mockServer.url("/");
+            log.info("baseUrl=== " + baseUrl);
 
             //Кидаем тестовый кейс в бд (базовый урл будет тестовым)
-            var request = "url=" + baseUrl.toString();
+            var request = "url=" + baseUrl;
             var response = client.post(NamedRoutes.urlsPath(), request);
             assertThat(response.code()).isEqualTo(200);
 
-            //Основной тест кейс
+            //Делаем check для переданного урла
             var request2 = NamedRoutes.checksPath("1");
-            log.info("request2===" + request2);
             var responseCheck = client.post(request2);
             var responseCheckBody = responseCheck.body().string();
-//            HttpResponse<String> responseCheck = Unirest.post("urls/{id}/checks")
-//                    .routeParam("id", "1")
-//                    .field("url", url1)
-//                    .asString();
-//            assertThat(responseCheckBody).contains("https://ya.ru");
+
             assertThat(responseCheck.code()).isEqualTo(200);
-            assertThat(responseCheckBody).contains("<td>200</td>");
+            assertThat(responseCheckBody).contains("<td>201</td>");
             assertThat(responseCheckBody).contains("<td>" + baseUrl
                     .toString()
                     .replaceAll("/+$", "") + "</td>");
-//
-//            assertThat(responseCheckBody).contains("https://ya.ru");
-//            assertThat(responseCheck.body().string()).contains("<td>https://ya.ru</td>");
 
+            //Тут надо будет парсить html метаданные и передавать их для теста
+//            assertThat(responseCheckBody).contains("https://ya.title");
+//            assertThat(responseCheckBody).contains("Yandex-description");
+//            assertThat(responseCheckBody).contains("Yandex-H1");
         });
     }
 
     @AfterAll
     public static void shutdownMockWebServer() throws IOException {
-        testServer.shutdown();
+        mockServer.shutdown();
     }
 }
