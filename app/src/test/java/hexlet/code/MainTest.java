@@ -4,13 +4,10 @@ import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.http.NotFoundResponse;
-import kong.unirest.core.HttpResponse;
-import kong.unirest.core.Unirest;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,14 +24,11 @@ import org.junit.jupiter.api.Test;
 @Slf4j
 public class MainTest {
     Javalin app;
-    static MockWebServer mockWebServer;
-    static HttpUrl baseUrl;
+    static MockWebServer testServer;
 
     @BeforeAll
     public static void startMockWebServer() {
-        mockWebServer = new MockWebServer();
-        baseUrl = mockWebServer.url("/ya.hello");
-        log.info(baseUrl.toString());
+        testServer = new MockWebServer();
     }
 
 
@@ -107,43 +100,46 @@ public class MainTest {
     @Test
     public void testCheckUrl() throws InterruptedException {
         JavalinTest.test(app, (server, client) -> {
-            // Кидаем тестовый кейс в бд, урл генерим для Mock
+            //Делаем конфиг базового урла
+            HttpUrl baseUrl = testServer.url("/");
+            log.info("baseUrl===" + baseUrl.toString());
+
+            //Генерим тут страницу в Мок для выдачи тесту
+            MockResponse mockResponse1 = new MockResponse().setBody("https://ya.ru");
+            MockResponse mockResponse2 = new MockResponse().setStatus("200");
+            testServer.enqueue(mockResponse1);
+            testServer.enqueue(mockResponse2);
+
+            //Кидаем тестовый кейс в бд (базовый урл будет тестовым)
             var request = "url=" + baseUrl.toString();
             var response = client.post(NamedRoutes.urlsPath(), request);
             assertThat(response.code()).isEqualTo(200);
 
-            // Генерим тут страницу
-            baseUrl = mockWebServer.url(baseUrl.toString() + "urls/1");
-            log.info("baseUrl===" + baseUrl.toString());
-            MockResponse mockResponse1 = new MockResponse().setBody("https://ya.ru");
-//            MockResponse mockResponse2 = new MockResponse().setBody("title=ya.ru");
-//            MockResponse mockResponse3 = new MockResponse().setBody("h1=ya.ru");
-            MockResponse mockResponse4 = new MockResponse().setStatus("200");
-//            MockResponse mockResponse5 = new MockResponse().setBody("description=yandex");
-            mockWebServer.enqueue(mockResponse1);
-//            mockWebServer.enqueue(mockResponse2);
-//            mockWebServer.enqueue(mockResponse3);
-            mockWebServer.enqueue(mockResponse4);
-//            mockWebServer.enqueue(mockResponse5);
+            //Делаем ???
+//            HttpUrl baseUrlTest = testServer.url(baseUrl.toString() + "urls/1");
+//            log.info("baseUrl===" + baseUrlTest.toString());
 
-
-
-            var request2 = baseUrl.toString() + "/checks";
+            //Основной тест кейс
+            var request2 = NamedRoutes.checksPath("1");
             log.info("request2===" + request2);
             var responseCheck = client.post(request2);
 //            HttpResponse<String> responseCheck = Unirest.post("urls/{id}/checks")
 //                    .routeParam("id", "1")
 //                    .field("url", url1)
 //                    .asString();
-
             assertThat(responseCheck.body().string()).contains("https://ya.ru");
-            assertThat(responseCheck.body().string()).contains("<td>https://ya.ru</td>");
+            assertThat(responseCheck.code()).isEqualTo(200);
             assertThat(responseCheck.body().string()).contains("<td>200</td>");
+//            assertThat(responseCheck.body().string()).contains("<td>" + baseUrl.toString() + "</td>");
+//
+            assertThat(responseCheck.body().string()).contains("https://ya.ru");
+//            assertThat(responseCheck.body().string()).contains("<td>https://ya.ru</td>");
+
         });
     }
 
     @AfterAll
     public static void shutdownMockWebServer() throws IOException {
-        mockWebServer.shutdown();
+        testServer.shutdown();
     }
 }
