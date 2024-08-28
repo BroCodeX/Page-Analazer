@@ -10,6 +10,7 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -119,6 +120,8 @@ public class MainTest {
             MockResponse mockResponse = new MockResponse().setResponseCode(200)
                     .setBody(htmlContent.toString());
             mockServer.enqueue(mockResponse);
+            mockServer.enqueue(mockResponse);
+            mockServer.enqueue(mockResponse);
             mockServer.start();
 
             //Устанавливаем базовый урл серверу
@@ -133,22 +136,24 @@ public class MainTest {
             //Делаем check для переданного урла
             var request2 = NamedRoutes.checksPath("1");
             var responseCheck = client.post(request2);
-            var responseCheckBody = responseCheck.body().string();
-
             assertThat(responseCheck.code()).isEqualTo(200);
+
+            var responseCheckBody = responseCheck.body().string();
             assertThat(responseCheckBody).contains("<td>200</td>");
+            assertThat(responseCheckBody).contains("<td>https://ya.title</td>");
+            assertThat(responseCheckBody).contains("<td>Yandex-H1</td>");
+            assertThat(responseCheckBody).contains("<td>Yandex-description</td>");
             assertThat(responseCheckBody).contains("<td>" + baseUrl
                     .toString()
                     .replaceAll("/+$", "") + "</td>");
 
             //Тут надо будет парсить html метаданные и передавать их для теста
-            Document document = Jsoup.parse(responseCheckBody);
-//            Document documentDirect = Jsoup.connect(baseUrl.toString()).get();
-
-            assertEquals("https://ya.title", document.title());
-            assertEquals("Yandex-H1", document.selectFirst("h1").text());
-            assertEquals("Yandex-description", document.selectFirst("meta[name=description]")
-                    .attr("content"));
+//            Element document = Jsoup.parse(responseCheck.toString());
+//
+//            assertEquals("https://ya.title", document.selectFirst("title").text());
+//            assertEquals("Yandex-H1", document.selectFirst("h1").text());
+//            assertEquals("Yandex-description", document.selectFirst("meta[name=description]")
+//                    .attr("content"));
         });
     }
 
