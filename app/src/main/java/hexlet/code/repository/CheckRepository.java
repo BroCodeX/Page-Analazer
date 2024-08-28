@@ -13,8 +13,8 @@ import java.util.Optional;
 public class CheckRepository extends BaseRepository {
 
     public static void save(UrlCheck check) throws SQLException {
-        String sql = "INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
         try (var conn = dataSource.getConnection();
                 var preparedStmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preparedStmt.setLong(1, check.getUrlId());

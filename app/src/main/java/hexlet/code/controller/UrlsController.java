@@ -9,7 +9,6 @@ import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
-import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Unirest;
 import kong.unirest.core.UnirestException;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +25,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
@@ -129,7 +127,7 @@ public class UrlsController {
         return baseUrl;
     }
 
-    public static Map<String, String> getHtmlContent(String urlAddress){
+    public static Map<String, String> getHtmlContent(String urlAddress) {
         Map<String, String> map = new HashMap<>();
         try {
             Document document = Jsoup.connect(urlAddress).get();
