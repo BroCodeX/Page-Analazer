@@ -28,7 +28,7 @@ public class UrlModel {
     }
 
     public void addCheck(UrlCheck check) {
-//        check.setUrlId(this.id);
+        //check.setUrlId(this.id);
         urlChecks.add(check);
     }
 

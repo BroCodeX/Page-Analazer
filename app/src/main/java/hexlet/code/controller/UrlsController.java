@@ -13,15 +13,21 @@ import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Unirest;
 import kong.unirest.core.UnirestException;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
@@ -89,10 +95,11 @@ public class UrlsController {
         Long id = context.pathParamAsClass("id", Long.class).get();
         UrlModel url = UrlRepository.find(id).get();
         try {
-            String title = "title";
-            String h1 = "h1";
-            String description = "description";
-            Unirest.config().connectTimeout(5000);
+            Map<String, String> content = getHtmlContent(url.getName());
+            String title = content.get("title");
+            String h1 = content.get("h1");
+            String description = content.get("description");
+            Unirest.config().connectTimeout(10000);
             int statusCode = Unirest.get(url.getName()).asString().getStatus();
             LocalDateTime createdAtCheck = LocalDateTime.now();
 
@@ -105,10 +112,11 @@ public class UrlsController {
             context.sessionAttribute("flashType", "success");
             context.redirect(NamedRoutes.urlPath(id));
         } catch (UnirestException ex) {
-            context.sessionAttribute("flash", "Timeout. Проверьте доступность домена");
+            context.sessionAttribute("flash", ex.toString());
             context.sessionAttribute("flashType", "danger");
             context.redirect(NamedRoutes.urlPath(id));
         }
+        Unirest.config().reset();
     }
 
     public static String getNormalizeUrl(URL url) {
@@ -119,5 +127,22 @@ public class UrlsController {
             return String.format("%s:%s", baseUrl, url.getPort());
         }
         return baseUrl;
+    }
+
+    public static Map<String, String> getHtmlContent(String urlAddress){
+        Map<String, String> map = new HashMap<>();
+        try {
+            Document document = Jsoup.connect(urlAddress).get();
+            map.put("title", document.title());
+            Element h1Element = document
+                    .selectFirst("h1");
+            map.put("h1", h1Element == null ? "" : h1Element.text());
+            Element descriptionEl = document
+                    .selectFirst("meta[name=description]");
+            map.put("description", descriptionEl == null ? "" : descriptionEl.attr("content"));
+        } catch (IOException ex) {
+            throw new NotFoundResponse();
+        }
+        return map;
     }
 }
