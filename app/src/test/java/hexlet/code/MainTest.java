@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +18,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -113,7 +116,7 @@ public class MainTest {
                     .append("<h1>Yandex-H1</h1>")
                     .append("</body>")
                     .append("</html>");
-            MockResponse mockResponse = new MockResponse().setResponseCode(201)
+            MockResponse mockResponse = new MockResponse().setResponseCode(200)
                     .setBody(htmlContent.toString());
             mockServer.enqueue(mockResponse);
             mockServer.start();
@@ -133,15 +136,19 @@ public class MainTest {
             var responseCheckBody = responseCheck.body().string();
 
             assertThat(responseCheck.code()).isEqualTo(200);
-            assertThat(responseCheckBody).contains("<td>201</td>");
+            assertThat(responseCheckBody).contains("<td>200</td>");
             assertThat(responseCheckBody).contains("<td>" + baseUrl
                     .toString()
                     .replaceAll("/+$", "") + "</td>");
 
             //Тут надо будет парсить html метаданные и передавать их для теста
-//            assertThat(responseCheckBody).contains("https://ya.title");
-//            assertThat(responseCheckBody).contains("Yandex-description");
-//            assertThat(responseCheckBody).contains("Yandex-H1");
+            Document document = Jsoup.parse(responseCheckBody);
+//            Document documentDirect = Jsoup.connect(baseUrl.toString()).get();
+
+            assertEquals("https://ya.title", document.title());
+            assertEquals("Yandex-H1", document.selectFirst("h1").text());
+            assertEquals("Yandex-description", document.selectFirst("meta[name=description]")
+                    .attr("content"));
         });
     }
 

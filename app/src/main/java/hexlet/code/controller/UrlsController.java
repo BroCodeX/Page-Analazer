@@ -92,12 +92,12 @@ public class UrlsController {
     public static void check(Context context) throws SQLException {
         Long id = context.pathParamAsClass("id", Long.class).get();
         UrlModel url = UrlRepository.find(id).get();
+        Unirest.config().connectTimeout(5000);
         try {
             Map<String, String> content = getHtmlContent(url.getName());
             String title = content.get("title");
             String h1 = content.get("h1");
             String description = content.get("description");
-            Unirest.config().connectTimeout(10000);
             int statusCode = Unirest.get(url.getName()).asString().getStatus();
             LocalDateTime createdAtCheck = LocalDateTime.now();
 
@@ -110,7 +110,7 @@ public class UrlsController {
             context.sessionAttribute("flashType", "success");
             context.redirect(NamedRoutes.urlPath(id));
         } catch (UnirestException ex) {
-            context.sessionAttribute("flash", ex.toString());
+            context.sessionAttribute("flash", ex.getMessage());
             context.sessionAttribute("flashType", "danger");
             context.redirect(NamedRoutes.urlPath(id));
         }
@@ -130,7 +130,7 @@ public class UrlsController {
     public static Map<String, String> getHtmlContent(String urlAddress) {
         Map<String, String> map = new HashMap<>();
         try {
-            Document document = Jsoup.connect(urlAddress).get();
+            Document document = Jsoup.connect(urlAddress).timeout(5000).get();
             map.put("title", document.title());
             Element h1Element = document
                     .selectFirst("h1");
@@ -139,7 +139,7 @@ public class UrlsController {
                     .selectFirst("meta[name=description]");
             map.put("description", descriptionEl == null ? "" : descriptionEl.attr("content"));
         } catch (IOException ex) {
-            throw new NotFoundResponse();
+            throw new UnirestException("Страница не найдена или недоступна для проверки");
         }
         return map;
     }
