@@ -115,11 +115,12 @@ public class MainTest {
                     .setBody(htmlContent.toString());
             mockServer.enqueue(mockResponse);
             mockServer.enqueue(mockResponse);
+            mockServer.enqueue(mockResponse);
             mockServer.start();
 
             //Устанавливаем базовый урл серверу
             HttpUrl baseUrl = mockServer.url("/");
-            log.info("MockUrl: {}", baseUrl);
+//            log.info("MockUrl: {}", baseUrl);
 
             //Кидаем тестовый кейс в бд (базовый урл будет тестовым)
             var request = "url=" + baseUrl;
