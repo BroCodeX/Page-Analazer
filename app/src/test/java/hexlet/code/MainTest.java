@@ -115,6 +115,7 @@ public class MainTest {
                     .setBody(htmlContent.toString());
             mockServer.enqueue(mockResponse);
             mockServer.enqueue(mockResponse);
+            mockServer.enqueue(mockResponse);
             mockServer.start();
 
             //Устанавливаем базовый урл серверу
@@ -126,7 +127,7 @@ public class MainTest {
             var response = client.post(NamedRoutes.urlsPath(), request);
             assertThat(response.code()).isEqualTo(200);
 
-            //Делаем check для переданного урл
+            //Делаем check для переданного урла
             var request2 = NamedRoutes.checksPath("1");
             var responseCheck = client.post(request2);
             assertThat(responseCheck.code()).isEqualTo(200);
