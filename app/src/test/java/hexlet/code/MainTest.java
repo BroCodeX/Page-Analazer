@@ -115,7 +115,6 @@ public class MainTest {
                     .setBody(htmlContent.toString());
             mockServer.enqueue(mockResponse);
             mockServer.enqueue(mockResponse);
-            mockServer.enqueue(mockResponse);
             mockServer.start();
 
             //Устанавливаем базовый урл серверу

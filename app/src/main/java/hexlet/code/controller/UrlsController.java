@@ -72,7 +72,7 @@ public class UrlsController {
             log.info("Нормализованный урл: {}", normalizedUrl);
             if (UrlRepository.find(normalizedUrl).isPresent()) {
                 context.sessionAttribute("flash", "Страница уже существует");
-                context.sessionAttribute("flashType", "warning");
+                context.sessionAttribute("flashType", "danger");
                 context.redirect(NamedRoutes.rootPath());
             } else {
                 UrlModel urlModel = new UrlModel(normalizedUrl, LocalDateTime.now());
