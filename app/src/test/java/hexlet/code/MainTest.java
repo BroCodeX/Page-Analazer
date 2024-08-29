@@ -146,14 +146,6 @@ public class MainTest {
             assertThat(responseCheckBody).contains("<td>" + baseUrl
                     .toString()
                     .replaceAll("/+$", "") + "</td>");
-
-            //Тут надо будет парсить html метаданные и передавать их для теста
-//            Element document = Jsoup.parse(responseCheck.toString());
-//
-//            assertEquals("https://ya.title", document.selectFirst("title").text());
-//            assertEquals("Yandex-H1", document.selectFirst("h1").text());
-//            assertEquals("Yandex-description", document.selectFirst("meta[name=description]")
-//                    .attr("content"));
         });
     }
 
