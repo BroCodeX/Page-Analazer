@@ -32,7 +32,7 @@ public class App {
                 .lines()
                 .collect(Collectors.joining("\n"));
 
-        log.info(sql);
+        log.info("SQL: {}", sql);
         try (var connection = dataSource.getConnection();
             var statement = connection.createStatement()) {
             statement.execute(sql);
@@ -67,7 +67,7 @@ public class App {
     private static String getDatabaseUrl() {
         String connect = System.getenv().getOrDefault("JDBC_DATABASE_URL",
                 "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
-        log.info(connect);
+        log.info("Connect address: {}", connect);
         return connect;
     }
 

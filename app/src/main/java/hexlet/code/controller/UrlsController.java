@@ -69,7 +69,7 @@ public class UrlsController {
             URI uri = new URI(name);
             URL url = uri.toURL();
             String normalizedUrl = getNormalizeUrl(url);
-            log.info(normalizedUrl);
+            log.info("Нормализованный урл: {}", normalizedUrl);
             if (UrlRepository.find(normalizedUrl).isPresent()) {
                 context.sessionAttribute("flash", "Страница уже существует");
                 context.sessionAttribute("flashType", "danger");
