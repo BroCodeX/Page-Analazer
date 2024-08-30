@@ -12,6 +12,9 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -112,7 +115,7 @@ public class MainTest {
                     .append("</body>")
                     .append("</html>");
             MockResponse mockResponse = new MockResponse().setResponseCode(200)
-                    .setBody(htmlContent.toString());
+                    .setBody(readFixture("testPage.html"));
             mockServer.enqueue(mockResponse);
             mockServer.enqueue(mockResponse);
             mockServer.start();
@@ -145,5 +148,15 @@ public class MainTest {
     @AfterAll
     public static void shutdownMockWebServer() throws IOException {
         mockServer.shutdown();
+    }
+
+    public static Path getFixturePath(String filename) {
+        return Paths.get("src", "test", "resources", "fixtures", filename)
+                .toAbsolutePath().normalize();
+    }
+
+    public static String readFixture(String filename) throws IOException {
+        Path filePath = getFixturePath(filename);
+        return Files.readString(filePath).trim();
     }
 }
