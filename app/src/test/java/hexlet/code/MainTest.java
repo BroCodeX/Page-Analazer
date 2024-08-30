@@ -104,16 +104,6 @@ public class MainTest {
     public void testCheckUrl() {
         JavalinTest.test(app, (server, client) -> {
             //Генерим тут страницу в Мок для передачи приложению
-            StringBuilder htmlContent = new StringBuilder()
-                    .append("<html>")
-                    .append("<head>")
-                    .append("<title>https://ya.title</title>")
-                    .append("<meta name=\"description\" content=\"Yandex-description\">")
-                    .append("</head>")
-                    .append("<body>")
-                    .append("<h1>Yandex-H1</h1>")
-                    .append("</body>")
-                    .append("</html>");
             MockResponse mockResponse = new MockResponse().setResponseCode(200)
                     .setBody(readFixture("testPage.html"));
             mockServer.enqueue(mockResponse);
