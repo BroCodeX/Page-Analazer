@@ -34,8 +34,8 @@ public class CheckRepository extends BaseRepository {
         }
     }
 
-    public static Optional<UrlCheck> find(Long urlId) throws SQLException {
-        String sql = "SELECT * FROM url_checks WHERE url_id = ?";
+    public static Optional<UrlCheck> findLastCheck(Long urlId) throws SQLException {
+        String sql = "SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC";
         try (var conn = dataSource.getConnection();
                 var preparedStmt = conn.prepareStatement(sql)) {
             preparedStmt.setLong(1, urlId);
