@@ -4,7 +4,6 @@ import hexlet.code.repository.CheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
-import io.javalin.http.NotFoundResponse;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
@@ -17,8 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import io.javalin.testtools.JavalinTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @Slf4j
 public class MainTest {
@@ -55,8 +54,11 @@ public class MainTest {
     @Test
     public void testIndexPage() {
         JavalinTest.test(app, (server, client) -> {
+            var request = "url=https://test-domain.org/example/path";
+            client.post(NamedRoutes.urlsPath(), request);
             var response = client.get(NamedRoutes.urlsPath());
             assertThat(response.code()).isEqualTo(200);
+            assertThat(response.body().string()).contains("https://test-domain.org");
         });
     }
 
@@ -86,15 +88,10 @@ public class MainTest {
     @Test
     public void testCreateUrl() {
         JavalinTest.test(app, (server, client) -> {
-            var request = "url=https://some-domain.org/example/path";
+            var request = "url=https://your-domain.org:8080/example/path";
             var response = client.post(NamedRoutes.urlsPath(), request);
             assertThat(response.code()).isEqualTo(200);
-            assertThat(response.body().string()).contains("https://some-domain.org");
-
-            var requestPort = "url=https://your-domain.org:8080/example/path";
-            var responsePort = client.post(NamedRoutes.urlsPath(), requestPort);
-            assertThat(responsePort.code()).isEqualTo(200);
-            assertThat(responsePort.body().string()).contains("https://your-domain.org:8080");
+            assertThat(response.body().string()).contains("https://your-domain.org:8080");
 
             var requestFail = "url=badUrlHere";
             var responseFail = client.post(NamedRoutes.urlsPath(), requestFail);
