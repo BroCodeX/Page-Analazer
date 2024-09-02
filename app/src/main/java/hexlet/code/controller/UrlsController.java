@@ -38,7 +38,7 @@ public class UrlsController {
         if (!CheckRepository.getEntries().isEmpty()) {
             for (UrlModel url : urlModels) {
                 Long id = url.getId();
-                LinkedList<UrlCheck> checks = CheckRepository.findEntries(id);
+                LinkedList<UrlCheck> checks = new LinkedList<>(CheckRepository.findEntries(id));
                 url.addCheck(checks.peekLast());
             }
         }
@@ -53,7 +53,7 @@ public class UrlsController {
         UrlModel url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse(String.format("Url with %s is not found", id)));
         if (!CheckRepository.findEntries(id).isEmpty()) {
-            url.addChecks(CheckRepository.findEntries(id));
+            url.addChecks(new LinkedList<>(CheckRepository.findEntries(id)));
         }
 
         UrlPage page = new UrlPage(url);
