@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,8 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import io.javalin.testtools.JavalinTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 @Slf4j
 public class MainTest {
@@ -54,11 +53,17 @@ public class MainTest {
     @Test
     public void testIndexPage() {
         JavalinTest.test(app, (server, client) -> {
-            var request = "url=https://test-domain.org/example/path";
-            client.post(NamedRoutes.urlsPath(), request);
+            List<String> domains = List.of("https://test-domain.org/example/path", "https://test-another.org/");
+            domains.forEach(domain -> {
+                var request = "url=" + domain;
+                client.post(NamedRoutes.urlsPath(), request);
+            });
+
             var response = client.get(NamedRoutes.urlsPath());
+            String body = response.body().string();
             assertThat(response.code()).isEqualTo(200);
-            assertThat(response.body().string()).contains("https://test-domain.org");
+            assertThat(body).contains("https://test-domain.org");
+            assertThat(body).contains("https://test-another.org");
         });
     }
 
@@ -131,8 +136,8 @@ public class MainTest {
 
             //Делаем check для переданного урла
             Long testedId = 1L;
-            var request2 = NamedRoutes.checksPath(testedId);
-            var responseCheck = client.post(request2);
+            var requestCheck = NamedRoutes.checksPath(testedId);
+            var responseCheck = client.post(requestCheck);
             assertThat(responseCheck.code()).isEqualTo(200);
 
             var testedUrl = CheckRepository.findLastCheck(testedId);
