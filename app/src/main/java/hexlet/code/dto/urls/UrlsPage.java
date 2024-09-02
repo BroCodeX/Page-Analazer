@@ -6,9 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
 public class UrlsPage extends BasePage {
-    private LinkedList<UrlModel> urlModels;
+    private List<UrlModel> urlModels;
 }

@@ -42,7 +42,7 @@ public class UrlsController {
                 url.addCheck(checks.peekLast());
             }
         }
-        UrlsPage page = new UrlsPage(new LinkedList<>(urlModels));
+        UrlsPage page = new UrlsPage(urlModels);
         page.setFlash(context.consumeSessionAttribute("flash"));
         page.setFlashType(context.consumeSessionAttribute("flashType"));
         context.render("urls/index.jte", model("page", page));
@@ -53,7 +53,7 @@ public class UrlsController {
         UrlModel url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse(String.format("Url with %s is not found", id)));
         if (!CheckRepository.findEntries(id).isEmpty()) {
-            url.addChecks(new LinkedList<>(CheckRepository.findEntries(id)));
+            url.addChecks(CheckRepository.findEntries(id));
         }
 
         UrlPage page = new UrlPage(url);
