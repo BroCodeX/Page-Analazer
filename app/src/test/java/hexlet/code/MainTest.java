@@ -1,5 +1,6 @@
 package hexlet.code;
 
+import hexlet.code.repository.CheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
@@ -16,9 +17,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 import io.javalin.testtools.JavalinTest;
@@ -130,18 +133,18 @@ public class MainTest {
             assertThat(response.code()).isEqualTo(200);
 
             //Делаем check для переданного урла
-            var request2 = NamedRoutes.checksPath("1");
+            Long testedId = 1L;
+            var request2 = NamedRoutes.checksPath(testedId);
             var responseCheck = client.post(request2);
             assertThat(responseCheck.code()).isEqualTo(200);
 
-            var responseCheckBody = responseCheck.body().string();
-            assertThat(responseCheckBody).contains("<td>200</td>");
-            assertThat(responseCheckBody).contains("<td>https://ya.title</td>");
-            assertThat(responseCheckBody).contains("<td>Yandex-H1</td>");
-            assertThat(responseCheckBody).contains("<td>Yandex-description</td>");
-            assertThat(responseCheckBody).contains("<td>" + baseUrl
-                    .toString()
-                    .replaceAll("/+$", "") + "</td>");
+            var testedUrl = CheckRepository.findLastCheck(testedId);
+
+            assertEquals(200, testedUrl.get().getStatusCode());
+            assertEquals("https://ya.title", testedUrl.get().getTitle());
+            assertEquals("Yandex-H1", testedUrl.get().getH1());
+            assertEquals("Yandex-description", testedUrl.get().getDescription());
+            assertFalse(testedUrl.get().getFormattedDate().isBlank());
         });
     }
 
