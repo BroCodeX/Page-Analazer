@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
@@ -33,7 +34,7 @@ import static io.javalin.rendering.template.TemplateUtil.model;
 public class UrlsController {
 
     public static void index(Context context) throws SQLException {
-        LinkedList<UrlModel> urlModels = UrlRepository.getEntries();
+        List<UrlModel> urlModels = UrlRepository.getEntries();
         if (!CheckRepository.getEntries().isEmpty()) {
             for (UrlModel url : urlModels) {
                 Long id = url.getId();
@@ -41,7 +42,7 @@ public class UrlsController {
                 url.addCheck(checks.peekLast());
             }
         }
-        UrlsPage page = new UrlsPage(urlModels);
+        UrlsPage page = new UrlsPage(new LinkedList<>(urlModels));
         page.setFlash(context.consumeSessionAttribute("flash"));
         page.setFlashType(context.consumeSessionAttribute("flashType"));
         context.render("urls/index.jte", model("page", page));
@@ -92,7 +93,6 @@ public class UrlsController {
     public static void check(Context context) throws SQLException {
         Long id = context.pathParamAsClass("id", Long.class).get();
         UrlModel url = UrlRepository.find(id).get();
-        Unirest.config().connectTimeout(5000);
         try {
             Map<String, String> content = getHtmlContent(url.getName());
             String title = content.get("title");

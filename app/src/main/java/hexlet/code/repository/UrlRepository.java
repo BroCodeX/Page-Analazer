@@ -7,7 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class UrlRepository extends BaseRepository {
@@ -67,12 +68,12 @@ public class UrlRepository extends BaseRepository {
         }
     }
 
-    public static LinkedList<UrlModel> getEntries() throws SQLException {
+    public static List<UrlModel> getEntries() throws SQLException {
         String sql = "SELECT * FROM urls";
         try (var conn = dataSource.getConnection();
                 var preparedStmt = conn.prepareStatement(sql)) {
             ResultSet set = preparedStmt.executeQuery();
-            LinkedList<UrlModel> result = new LinkedList<>();
+            List<UrlModel> result = new ArrayList<>();
             while (set.next()) {
                 Long id = set.getLong("id");
                 String name = set.getString("name");
