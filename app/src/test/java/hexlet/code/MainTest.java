@@ -63,7 +63,7 @@ public class MainTest {
             var request = "url=https://some-domain.org/example/path";
             client.post(NamedRoutes.urlsPath(), request);
             Long id = UrlRepository.find("https://some-domain.org")
-                    .orElseThrow(NotFoundResponse::new)
+                    .get()
                     .getId();
             var response = client.get(NamedRoutes.urlPath(id));
             assertThat(response.code()).isEqualTo(200);
@@ -93,6 +93,16 @@ public class MainTest {
             assertThat(responsePort.code()).isEqualTo(200);
             assertThat(responsePort.body().string()).contains("https://your-domain.org:8080");
 
+            var requestFail = "url=badUrlHere";
+            var responseFail = client.post(NamedRoutes.urlsPath(), requestFail);
+            assertThat(responseFail.code()).isEqualTo(200);
+            assertFalse(responseFail.body().string().contains("badUrlHere"));
+        });
+    }
+
+    @Test
+    public void testCreateBadUrl() {
+        JavalinTest.test(app, (server, client) -> {
             var requestFail = "url=badUrlHere";
             var responseFail = client.post(NamedRoutes.urlsPath(), requestFail);
             assertThat(responseFail.code()).isEqualTo(200);
