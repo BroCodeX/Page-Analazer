@@ -1,9 +1,11 @@
 package hexlet.code;
 
+import hexlet.code.controller.UrlsController;
+import hexlet.code.model.UrlModel;
+import hexlet.code.repository.CheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
-import io.javalin.http.NotFoundResponse;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
@@ -16,9 +18,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 
 import io.javalin.testtools.JavalinTest;
@@ -52,8 +58,17 @@ public class MainTest {
     @Test
     public void testIndexPage() {
         JavalinTest.test(app, (server, client) -> {
+            List<String> domains = List.of("https://test-domain.org/example/path", "https://test-another.org/");
+            domains.forEach(domain -> {
+                var request = "url=" + domain;
+                client.post(NamedRoutes.urlsPath(), request);
+            });
+
             var response = client.get(NamedRoutes.urlsPath());
+            String body = response.body().string();
             assertThat(response.code()).isEqualTo(200);
+            assertThat(body).contains("https://test-domain.org");
+            assertThat(body).contains("https://test-another.org");
         });
     }
 
@@ -63,7 +78,7 @@ public class MainTest {
             var request = "url=https://some-domain.org/example/path";
             client.post(NamedRoutes.urlsPath(), request);
             Long id = UrlRepository.find("https://some-domain.org")
-                    .orElseThrow(NotFoundResponse::new)
+                    .get()
                     .getId();
             var response = client.get(NamedRoutes.urlPath(id));
             assertThat(response.code()).isEqualTo(200);
@@ -83,16 +98,21 @@ public class MainTest {
     @Test
     public void testCreateUrl() {
         JavalinTest.test(app, (server, client) -> {
-            var request = "url=https://some-domain.org/example/path";
+            var request = "url=https://your-domain.org:8080/example/path";
             var response = client.post(NamedRoutes.urlsPath(), request);
             assertThat(response.code()).isEqualTo(200);
-            assertThat(response.body().string()).contains("https://some-domain.org");
+            assertThat(response.body().string()).contains("https://your-domain.org:8080");
 
-            var requestPort = "url=https://your-domain.org:8080/example/path";
-            var responsePort = client.post(NamedRoutes.urlsPath(), requestPort);
-            assertThat(responsePort.code()).isEqualTo(200);
-            assertThat(responsePort.body().string()).contains("https://your-domain.org:8080");
+            var requestFail = "url=badUrlHere";
+            var responseFail = client.post(NamedRoutes.urlsPath(), requestFail);
+            assertThat(responseFail.code()).isEqualTo(200);
+            assertFalse(responseFail.body().string().contains("badUrlHere"));
+        });
+    }
 
+    @Test
+    public void testCreateBadUrl() {
+        JavalinTest.test(app, (server, client) -> {
             var requestFail = "url=badUrlHere";
             var responseFail = client.post(NamedRoutes.urlsPath(), requestFail);
             assertThat(responseFail.code()).isEqualTo(200);
@@ -107,7 +127,6 @@ public class MainTest {
             MockResponse mockResponse = new MockResponse().setResponseCode(200)
                     .setBody(readFixture("testPage.html"));
             mockServer.enqueue(mockResponse);
-            mockServer.enqueue(mockResponse);
             mockServer.start();
 
             //Устанавливаем базовый урл серверу
@@ -115,23 +134,23 @@ public class MainTest {
             log.info("MockUrl: {}", baseUrl);
 
             //Кидаем тестовый кейс в бд (базовый урл будет тестовым)
-            var request = "url=" + baseUrl;
-            var response = client.post(NamedRoutes.urlsPath(), request);
-            assertThat(response.code()).isEqualTo(200);
+            String normalizedUrl = UrlsController.getNormalizeUrl(baseUrl.url());
+            UrlModel urlModel = new UrlModel(normalizedUrl, LocalDateTime.now());
+            UrlRepository.save(urlModel);
 
             //Делаем check для переданного урла
-            var request2 = NamedRoutes.checksPath("1");
-            var responseCheck = client.post(request2);
+            Long testedId = 1L;
+            var requestCheck = NamedRoutes.checksPath(testedId);
+            var responseCheck = client.post(requestCheck);
             assertThat(responseCheck.code()).isEqualTo(200);
 
-            var responseCheckBody = responseCheck.body().string();
-            assertThat(responseCheckBody).contains("<td>200</td>");
-            assertThat(responseCheckBody).contains("<td>https://ya.title</td>");
-            assertThat(responseCheckBody).contains("<td>Yandex-H1</td>");
-            assertThat(responseCheckBody).contains("<td>Yandex-description</td>");
-            assertThat(responseCheckBody).contains("<td>" + baseUrl
-                    .toString()
-                    .replaceAll("/+$", "") + "</td>");
+            var testedCheck = CheckRepository.findLastCheck(testedId);
+
+            assertEquals(200, testedCheck.get().getStatusCode());
+            assertEquals("https://ya.title", testedCheck.get().getTitle());
+            assertEquals("Yandex-H1", testedCheck.get().getH1());
+            assertEquals("Yandex-description", testedCheck.get().getDescription());
+            assertFalse(testedCheck.get().getFormattedDate().isBlank());
         });
     }
 
