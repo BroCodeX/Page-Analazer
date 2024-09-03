@@ -12,6 +12,7 @@ import io.javalin.http.NotFoundResponse;
 import kong.unirest.core.Unirest;
 import kong.unirest.core.UnirestException;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -98,7 +99,7 @@ public class UrlsController {
             String title = content.get("title");
             String h1 = content.get("h1");
             String description = content.get("description");
-            int statusCode = Unirest.get(url.getName()).asString().getStatus();
+            int statusCode = Integer.parseInt(content.get("status"));
             LocalDateTime createdAtCheck = LocalDateTime.now();
 
             UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, statusCode);
@@ -130,7 +131,11 @@ public class UrlsController {
     public static Map<String, String> getHtmlContent(String urlAddress) {
         Map<String, String> map = new HashMap<>();
         try {
-            Document document = Jsoup.connect(urlAddress).timeout(5000).get();
+            Connection.Response response = Jsoup.connect(urlAddress).timeout(5000).execute();
+
+            int statusCode = response.statusCode();
+            map.put("status", String.valueOf(statusCode));
+            Document document = response.parse();
             map.put("title", document.title());
             Element h1Element = document
                     .selectFirst("h1");

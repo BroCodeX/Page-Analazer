@@ -14,17 +14,17 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 
 import io.javalin.testtools.JavalinTest;
@@ -126,7 +126,6 @@ public class MainTest {
             //Генерим тут страницу в Мок для передачи приложению
             MockResponse mockResponse = new MockResponse().setResponseCode(200)
                     .setBody(readFixture("testPage.html"));
-            mockServer.enqueue(mockResponse);
             mockServer.enqueue(mockResponse);
             mockServer.start();
 
