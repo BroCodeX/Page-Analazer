@@ -1,5 +1,7 @@
 package hexlet.code;
 
+import hexlet.code.controller.UrlsController;
+import hexlet.code.model.UrlModel;
 import hexlet.code.repository.CheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
@@ -12,10 +14,13 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -130,9 +135,10 @@ public class MainTest {
             log.info("MockUrl: {}", baseUrl);
 
             //Кидаем тестовый кейс в бд (базовый урл будет тестовым)
-            var request = "url=" + baseUrl;
-            var response = client.post(NamedRoutes.urlsPath(), request);
-            assertThat(response.code()).isEqualTo(200);
+            String normalizedUrl = UrlsController.getNormalizeUrl(baseUrl.url());
+            LocalDateTime localDateTime = LocalDateTime.now();
+            UrlModel urlModel = new UrlModel(normalizedUrl, localDateTime);
+            UrlRepository.save(urlModel);
 
             //Делаем check для переданного урла
             Long testedId = 1L;
@@ -140,13 +146,14 @@ public class MainTest {
             var responseCheck = client.post(requestCheck);
             assertThat(responseCheck.code()).isEqualTo(200);
 
-            var testedUrl = CheckRepository.findLastCheck(testedId);
+            var testedCheck = CheckRepository.findLastCheck(testedId);
 
-            assertEquals(200, testedUrl.get().getStatusCode());
-            assertEquals("https://ya.title", testedUrl.get().getTitle());
-            assertEquals("Yandex-H1", testedUrl.get().getH1());
-            assertEquals("Yandex-description", testedUrl.get().getDescription());
-            assertFalse(testedUrl.get().getFormattedDate().isBlank());
+            assertEquals(200, testedCheck.get().getStatusCode());
+            assertEquals("https://ya.title", testedCheck.get().getTitle());
+            assertEquals("Yandex-H1", testedCheck.get().getH1());
+            assertEquals("Yandex-description", testedCheck.get().getDescription());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            assertEquals(localDateTime.format(formatter), testedCheck.get().getFormattedDate());
         });
     }
 
