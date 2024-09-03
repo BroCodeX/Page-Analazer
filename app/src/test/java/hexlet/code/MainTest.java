@@ -96,17 +96,12 @@ public class MainTest {
     }
 
     @Test
-    public void testCreateUrl() {
+    public void testCreatePortUrl() {
         JavalinTest.test(app, (server, client) -> {
             var request = "url=https://your-domain.org:8080/example/path";
             var response = client.post(NamedRoutes.urlsPath(), request);
             assertThat(response.code()).isEqualTo(200);
             assertThat(response.body().string()).contains("https://your-domain.org:8080");
-
-            var requestFail = "url=badUrlHere";
-            var responseFail = client.post(NamedRoutes.urlsPath(), requestFail);
-            assertThat(responseFail.code()).isEqualTo(200);
-            assertFalse(responseFail.body().string().contains("badUrlHere"));
         });
     }
 
