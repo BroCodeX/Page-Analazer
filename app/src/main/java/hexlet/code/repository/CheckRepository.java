@@ -24,7 +24,7 @@ public class CheckRepository extends BaseRepository {
             preparedStmt.setString(3, check.getH1());
             preparedStmt.setString(4, check.getTitle());
             preparedStmt.setString(5, check.getDescription());
-            preparedStmt.setTimestamp(6, Timestamp.valueOf(check.getCreatedAt()));
+            preparedStmt.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
 
             preparedStmt.executeUpdate();
             var generatedKeys = preparedStmt.getGeneratedKeys();
@@ -49,7 +49,8 @@ public class CheckRepository extends BaseRepository {
                 String description = set.getNString("description");
                 LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
                 int statusCode = set.getInt("status_code");
-                UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, statusCode);
+                UrlCheck check = new UrlCheck(title, h1, description, statusCode);
+                check.setCreatedAt(createdAtCheck);
                 check.setId(id);
                 return Optional.of(check);
             } else {
@@ -71,7 +72,8 @@ public class CheckRepository extends BaseRepository {
                 String description = set.getNString("description");
                 LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
                 int statusCode = set.getInt("status_code");
-                UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, statusCode);
+                UrlCheck check = new UrlCheck(title, h1, description, statusCode);
+                check.setCreatedAt(createdAtCheck);
                 check.setId(id);
                 result.add(check);
                 result.sort(Comparator.comparingLong(UrlCheck::getId));
@@ -94,7 +96,8 @@ public class CheckRepository extends BaseRepository {
                 String description = set.getNString("description");
                 LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
                 int statusCode = set.getInt("status_code");
-                UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, statusCode);
+                UrlCheck check = new UrlCheck(title, h1, description, statusCode);
+                check.setCreatedAt(createdAtCheck);
                 check.setId(id);
                 result.add(check);
                 result.sort(Comparator.comparingLong(UrlCheck::getId));

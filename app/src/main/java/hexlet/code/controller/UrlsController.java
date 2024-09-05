@@ -23,7 +23,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -77,7 +76,7 @@ public class UrlsController {
                 context.sessionAttribute("flashType", "warning");
                 context.redirect(NamedRoutes.rootPath());
             } else {
-                Url urlModel = new Url(normalizedUrl, LocalDateTime.now());
+                Url urlModel = new Url(normalizedUrl);
                 UrlRepository.save(urlModel);
                 context.sessionAttribute("flash", "Страница успешно добавлена");
                 context.sessionAttribute("flashType", "success");
@@ -100,9 +99,8 @@ public class UrlsController {
             String h1 = content.get("h1");
             String description = content.get("description");
             int statusCode = Integer.parseInt(content.get("status"));
-            LocalDateTime createdAtCheck = LocalDateTime.now();
 
-            UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, statusCode);
+            UrlCheck check = new UrlCheck(title, h1, description, statusCode);
             check.setUrlId(url.getId());
             CheckRepository.save(check);
             url.addCheck(check);

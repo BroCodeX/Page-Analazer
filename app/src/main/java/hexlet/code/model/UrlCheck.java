@@ -18,11 +18,10 @@ public class UrlCheck {
     private LocalDateTime createdAt;
 //    private Url url;
 
-    public UrlCheck(String title, String h1, String description, LocalDateTime createdAt, int statusCode) {
+    public UrlCheck(String title, String h1, String description, int statusCode) {
         this.title = title;
         this.h1 = h1;
         this.description = description;
-        this.createdAt = createdAt;
         this.statusCode = statusCode;
 //        this.url = url;
     }

@@ -128,7 +128,8 @@ public class MainTest {
             log.info("MockUrl: {}", baseUrl);
 
             //Кидаем тестовый кейс в бд (базовый урл будет тестовым)
-            Url url = new Url(baseUrl.toString(), LocalDateTime.now());
+            Url url = new Url(baseUrl.toString());
+            url.setCreatedAt(LocalDateTime.now());
             UrlRepository.save(url);
 
             //Делаем check для переданного урла

@@ -19,7 +19,7 @@ public class UrlRepository extends BaseRepository {
         try (var conn = dataSource.getConnection();
                 var preparedStmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preparedStmt.setString(1, url.getName());
-            LocalDateTime createdAt = url.getCreatedAt();
+            LocalDateTime createdAt = LocalDateTime.now();
             preparedStmt.setTimestamp(2, Timestamp.valueOf(createdAt));
 
             preparedStmt.executeUpdate();
@@ -41,7 +41,8 @@ public class UrlRepository extends BaseRepository {
             if (set.next()) {
                 String name = set.getString("name");
                 LocalDateTime createdAt = set.getTimestamp("created_at").toLocalDateTime();
-                Url url = new Url(name, createdAt);
+                Url url = new Url(name);
+                url.setCreatedAt(createdAt);
                 url.setId(id);
                 return Optional.of(url);
             } else {
@@ -60,7 +61,8 @@ public class UrlRepository extends BaseRepository {
                 String name = set.getString("name");
                 LocalDateTime createdAt = set.getTimestamp("created_at").toLocalDateTime();
                 Long id = set.getLong("id");
-                Url urlModel = new Url(name, createdAt);
+                Url urlModel = new Url(name);
+                urlModel.setCreatedAt(createdAt);
                 urlModel.setId(id);
                 return Optional.of(urlModel);
             } else {
@@ -79,7 +81,8 @@ public class UrlRepository extends BaseRepository {
                 Long id = set.getLong("id");
                 String name = set.getString("name");
                 LocalDateTime createdAt = set.getTimestamp("created_at").toLocalDateTime();
-                Url url = new Url(name, createdAt);
+                Url url = new Url(name);
+                url.setCreatedAt(createdAt);
                 url.setId(id);
                 result.add(url);
                 result.sort(Comparator.comparingLong(Url::getId));
