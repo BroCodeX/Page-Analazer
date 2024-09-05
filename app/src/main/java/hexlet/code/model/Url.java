@@ -14,18 +14,18 @@ public class Url {
     private Long id;
     private String name;
     private LocalDateTime createdAt;
-    private List<UrlCheck> urlChecks;
+    private List<Check> checks;
 
     public Url(String name) {
         this.name = name;
-        urlChecks = new ArrayList<>();
+        checks = new ArrayList<>();
     }
 
     public Url(Long id, String name, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
-        urlChecks = new ArrayList<>();
+        checks = new ArrayList<>();
     }
 
     public String getFormattedDate() {
@@ -33,17 +33,17 @@ public class Url {
         return createdAt.format(formatter);
     }
 
-    public void addCheck(UrlCheck check) {
+    public void addCheck(Check check) {
         //check.setUrlId(this.id);
-        urlChecks.add(check);
+        checks.add(check);
     }
 
-    public void addChecks(List<UrlCheck> checks) {
-        urlChecks.addAll(checks);
+    public void addChecks(List<Check> checks) {
+        this.checks.addAll(checks);
     }
 
-    public void deleteCheck(UrlCheck check) {
+    public void deleteCheck(Check check) {
         check.setUrlId(null);
-        urlChecks.remove(check);
+        checks.remove(check);
     }
 }

@@ -2,7 +2,7 @@ package hexlet.code.controller;
 
 import hexlet.code.dto.urls.UrlPage;
 import hexlet.code.dto.urls.UrlsPage;
-import hexlet.code.model.UrlCheck;
+import hexlet.code.model.Check;
 import hexlet.code.model.Url;
 import hexlet.code.repository.CheckRepository;
 import hexlet.code.repository.UrlRepository;
@@ -38,7 +38,7 @@ public class UrlsController {
         if (!CheckRepository.getEntries().isEmpty()) {
             for (Url url : urls) {
                 Long id = url.getId();
-                LinkedList<UrlCheck> checks = new LinkedList<>(CheckRepository.findEntries(id));
+                LinkedList<Check> checks = new LinkedList<>(CheckRepository.findEntries(id));
                 url.addCheck(checks.peekLast());
             }
         }
@@ -100,7 +100,7 @@ public class UrlsController {
             String description = content.get("description");
             int statusCode = Integer.parseInt(content.get("status"));
 
-            UrlCheck check = new UrlCheck(title, h1, description, statusCode);
+            Check check = new Check(statusCode, title, h1, description);
             check.setUrlId(url.getId());
             CheckRepository.save(check);
             url.addCheck(check);

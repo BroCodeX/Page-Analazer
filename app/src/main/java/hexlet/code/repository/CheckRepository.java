@@ -1,6 +1,6 @@
 package hexlet.code.repository;
 
-import hexlet.code.model.UrlCheck;
+import hexlet.code.model.Check;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,7 +13,7 @@ import java.util.List;
 
 public class CheckRepository extends BaseRepository {
 
-    public static void save(UrlCheck check) throws SQLException {
+    public static void save(Check check) throws SQLException {
         String sql = "INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at) "
                 + "VALUES (?, ?, ?, ?, ?, ?)";
         try (var conn = dataSource.getConnection();
@@ -35,7 +35,7 @@ public class CheckRepository extends BaseRepository {
         }
     }
 
-    public static Optional<UrlCheck> findLastCheck(Long urlId) throws SQLException {
+    public static Optional<Check> findLastCheck(Long urlId) throws SQLException {
         String sql = "SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC";
         try (var conn = dataSource.getConnection();
                 var preparedStmt = conn.prepareStatement(sql)) {
@@ -48,9 +48,7 @@ public class CheckRepository extends BaseRepository {
                 String description = set.getNString("description");
                 LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
                 int statusCode = set.getInt("status_code");
-                UrlCheck check = new UrlCheck(title, h1, description, statusCode);
-                check.setCreatedAt(createdAtCheck);
-                check.setId(id);
+                Check check = new Check(id, statusCode, title, h1, description, urlId, createdAtCheck);
                 return Optional.of(check);
             } else {
                 return Optional.empty();
@@ -58,12 +56,12 @@ public class CheckRepository extends BaseRepository {
         }
     }
 
-    public static List<UrlCheck> getEntries() throws SQLException {
+    public static List<Check> getEntries() throws SQLException {
         String sql = "SELECT * FROM url_checks ORDER BY id";
         try (var conn = dataSource.getConnection();
                 var preparedStmt = conn.prepareStatement(sql)) {
             ResultSet set = preparedStmt.executeQuery();
-            List<UrlCheck> result = new ArrayList<>();
+            List<Check> result = new ArrayList<>();
             while (set.next()) {
                 Long id = set.getLong("id");
                 String title = set.getNString("title");
@@ -71,22 +69,21 @@ public class CheckRepository extends BaseRepository {
                 String description = set.getNString("description");
                 LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
                 int statusCode = set.getInt("status_code");
-                UrlCheck check = new UrlCheck(title, h1, description, statusCode);
-                check.setCreatedAt(createdAtCheck);
-                check.setId(id);
+                Long urlId = set.getLong("url_id");
+                Check check = new Check(id, statusCode, title, h1, description, urlId, createdAtCheck);
                 result.add(check);
             }
             return result;
         }
     }
 
-    public static List<UrlCheck> findEntries(Long urlId) throws SQLException {
+    public static List<Check> findEntries(Long urlId) throws SQLException {
         String sql = "SELECT * FROM url_checks WHERE url_id = ? ORDER BY id";
         try (var conn = dataSource.getConnection();
              var preparedStmt = conn.prepareStatement(sql)) {
             preparedStmt.setLong(1, urlId);
             ResultSet set = preparedStmt.executeQuery();
-            List<UrlCheck> result = new ArrayList<>();
+            List<Check> result = new ArrayList<>();
             while (set.next()) {
                 Long id = set.getLong("id");
                 String title = set.getNString("title");
@@ -94,9 +91,7 @@ public class CheckRepository extends BaseRepository {
                 String description = set.getNString("description");
                 LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
                 int statusCode = set.getInt("status_code");
-                UrlCheck check = new UrlCheck(title, h1, description, statusCode);
-                check.setCreatedAt(createdAtCheck);
-                check.setId(id);
+                Check check = new Check(id, statusCode, title, h1, description, urlId, createdAtCheck);
                 result.add(check);
             }
             return result;

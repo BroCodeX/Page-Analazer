@@ -1,5 +1,6 @@
 package hexlet.code.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +9,8 @@ import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
-public class UrlCheck {
+@AllArgsConstructor
+public class Check {
     private Long id;
     private int statusCode;
     private String title;
@@ -16,15 +18,22 @@ public class UrlCheck {
     private String description;
     private Long urlId;
     private LocalDateTime createdAt;
-//    private Url url;
 
-    public UrlCheck(String title, String h1, String description, int statusCode) {
+    public Check(int statusCode, String title, String h1, String description) {
         this.title = title;
         this.h1 = h1;
         this.description = description;
         this.statusCode = statusCode;
-//        this.url = url;
     }
+//
+//    public Check(Long id, int statusCode, String title, String h1, String description, LocalDateTime createdAt) {
+//        this.id = id;
+//        this.title = title;
+//        this.h1 = h1;
+//        this.description = description;
+//        this.statusCode = statusCode;
+//        this.createdAt = createdAt;
+//    }
 
     public String getFormattedDate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
