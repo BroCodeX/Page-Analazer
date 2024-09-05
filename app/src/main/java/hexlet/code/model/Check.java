@@ -25,15 +25,6 @@ public class Check {
         this.description = description;
         this.statusCode = statusCode;
     }
-//
-//    public Check(Long id, int statusCode, String title, String h1, String description, LocalDateTime createdAt) {
-//        this.id = id;
-//        this.title = title;
-//        this.h1 = h1;
-//        this.description = description;
-//        this.statusCode = statusCode;
-//        this.createdAt = createdAt;
-//    }
 
     public String getFormattedDate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
