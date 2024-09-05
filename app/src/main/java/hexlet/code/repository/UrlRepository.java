@@ -40,9 +40,7 @@ public class UrlRepository extends BaseRepository {
             if (set.next()) {
                 String name = set.getString("name");
                 LocalDateTime createdAt = set.getTimestamp("created_at").toLocalDateTime();
-                Url url = new Url(name);
-                url.setCreatedAt(createdAt);
-                url.setId(id);
+                Url url = new Url(id, name, createdAt);
                 return Optional.of(url);
             } else {
                 return Optional.empty();
@@ -60,9 +58,7 @@ public class UrlRepository extends BaseRepository {
                 String name = set.getString("name");
                 LocalDateTime createdAt = set.getTimestamp("created_at").toLocalDateTime();
                 Long id = set.getLong("id");
-                Url urlModel = new Url(name);
-                urlModel.setCreatedAt(createdAt);
-                urlModel.setId(id);
+                Url urlModel = new Url(id, name, createdAt);
                 return Optional.of(urlModel);
             } else {
                 return Optional.empty();
@@ -80,9 +76,7 @@ public class UrlRepository extends BaseRepository {
                 Long id = set.getLong("id");
                 String name = set.getString("name");
                 LocalDateTime createdAt = set.getTimestamp("created_at").toLocalDateTime();
-                Url url = new Url(name);
-                url.setCreatedAt(createdAt);
-                url.setId(id);
+                Url url = new Url(id, name, createdAt);
                 result.add(url);
             }
             return result;

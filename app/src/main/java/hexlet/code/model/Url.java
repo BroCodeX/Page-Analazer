@@ -21,6 +21,13 @@ public class Url {
         urlChecks = new ArrayList<>();
     }
 
+    public Url(Long id, String name, LocalDateTime createdAt) {
+        this.id = id;
+        this.name = name;
+        this.createdAt = createdAt;
+        urlChecks = new ArrayList<>();
+    }
+
     public String getFormattedDate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         return createdAt.format(formatter);
