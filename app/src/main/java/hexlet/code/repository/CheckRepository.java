@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.List;
 
@@ -60,7 +59,7 @@ public class CheckRepository extends BaseRepository {
     }
 
     public static List<UrlCheck> getEntries() throws SQLException {
-        String sql = "SELECT * FROM url_checks";
+        String sql = "SELECT * FROM url_checks ORDER BY id";
         try (var conn = dataSource.getConnection();
                 var preparedStmt = conn.prepareStatement(sql)) {
             ResultSet set = preparedStmt.executeQuery();
@@ -76,14 +75,13 @@ public class CheckRepository extends BaseRepository {
                 check.setCreatedAt(createdAtCheck);
                 check.setId(id);
                 result.add(check);
-                result.sort(Comparator.comparingLong(UrlCheck::getId));
             }
             return result;
         }
     }
 
     public static List<UrlCheck> findEntries(Long urlId) throws SQLException {
-        String sql = "SELECT * FROM url_checks WHERE url_id = ?";
+        String sql = "SELECT * FROM url_checks WHERE url_id = ? ORDER BY id";
         try (var conn = dataSource.getConnection();
              var preparedStmt = conn.prepareStatement(sql)) {
             preparedStmt.setLong(1, urlId);
@@ -100,7 +98,6 @@ public class CheckRepository extends BaseRepository {
                 check.setCreatedAt(createdAtCheck);
                 check.setId(id);
                 result.add(check);
-                result.sort(Comparator.comparingLong(UrlCheck::getId));
             }
             return result;
         }

@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,7 +71,7 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static List<Url> getEntries() throws SQLException {
-        String sql = "SELECT * FROM urls";
+        String sql = "SELECT * FROM urls ORDER BY id";
         try (var conn = dataSource.getConnection();
                 var preparedStmt = conn.prepareStatement(sql)) {
             ResultSet set = preparedStmt.executeQuery();
@@ -85,7 +84,6 @@ public class UrlRepository extends BaseRepository {
                 url.setCreatedAt(createdAt);
                 url.setId(id);
                 result.add(url);
-                result.sort(Comparator.comparingLong(Url::getId));
             }
             return result;
         }
