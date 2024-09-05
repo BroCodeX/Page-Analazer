@@ -133,7 +133,7 @@ public class MainTest {
             UrlRepository.save(url);
 
             //Делаем check для переданного урла
-            Long testedId = 1L;
+            Long testedId = UrlRepository.find(baseUrl.toString()).get().getId();
             var requestCheck = NamedRoutes.checksPath(testedId);
             var responseCheck = client.post(requestCheck);
             assertThat(responseCheck.code()).isEqualTo(200);
