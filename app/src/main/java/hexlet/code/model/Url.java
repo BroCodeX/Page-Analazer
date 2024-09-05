@@ -10,13 +10,13 @@ import java.util.List;
 
 @Getter
 @Setter
-public class UrlModel {
+public class Url {
     private Long id;
     private String name;
     private LocalDateTime createdAt;
     private List<UrlCheck> urlChecks;
 
-    public UrlModel(String name, LocalDateTime createdAt) {
+    public Url(String name, LocalDateTime createdAt) {
         this.name = name;
         this.createdAt = createdAt;
         urlChecks = new ArrayList<>();

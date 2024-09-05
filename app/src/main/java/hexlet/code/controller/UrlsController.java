@@ -3,7 +3,7 @@ package hexlet.code.controller;
 import hexlet.code.dto.urls.UrlPage;
 import hexlet.code.dto.urls.UrlsPage;
 import hexlet.code.model.UrlCheck;
-import hexlet.code.model.UrlModel;
+import hexlet.code.model.Url;
 import hexlet.code.repository.CheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
@@ -35,15 +35,15 @@ import static io.javalin.rendering.template.TemplateUtil.model;
 public class UrlsController {
 
     public static void index(Context context) throws SQLException {
-        List<UrlModel> urlModels = UrlRepository.getEntries();
+        List<Url> urls = UrlRepository.getEntries();
         if (!CheckRepository.getEntries().isEmpty()) {
-            for (UrlModel url : urlModels) {
+            for (Url url : urls) {
                 Long id = url.getId();
                 LinkedList<UrlCheck> checks = new LinkedList<>(CheckRepository.findEntries(id));
                 url.addCheck(checks.peekLast());
             }
         }
-        UrlsPage page = new UrlsPage(urlModels);
+        UrlsPage page = new UrlsPage(urls);
         page.setFlash(context.consumeSessionAttribute("flash"));
         page.setFlashType(context.consumeSessionAttribute("flashType"));
         context.render("urls/index.jte", model("page", page));
@@ -51,7 +51,7 @@ public class UrlsController {
 
     public static void show(Context context) throws SQLException {
         Long id = context.pathParamAsClass("id", Long.class).get();
-        UrlModel url = UrlRepository.find(id)
+        Url url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse(String.format("Url with %s is not found", id)));
         if (!CheckRepository.findEntries(id).isEmpty()) {
             url.addChecks(CheckRepository.findEntries(id));
@@ -77,7 +77,7 @@ public class UrlsController {
                 context.sessionAttribute("flashType", "warning");
                 context.redirect(NamedRoutes.rootPath());
             } else {
-                UrlModel urlModel = new UrlModel(normalizedUrl, LocalDateTime.now());
+                Url urlModel = new Url(normalizedUrl, LocalDateTime.now());
                 UrlRepository.save(urlModel);
                 context.sessionAttribute("flash", "Страница успешно добавлена");
                 context.sessionAttribute("flashType", "success");
@@ -93,7 +93,7 @@ public class UrlsController {
 
     public static void check(Context context) throws SQLException {
         Long id = context.pathParamAsClass("id", Long.class).get();
-        UrlModel url = UrlRepository.find(id).get();
+        Url url = UrlRepository.find(id).get();
         try {
             Map<String, String> content = getHtmlContent(url.getName());
             String title = content.get("title");

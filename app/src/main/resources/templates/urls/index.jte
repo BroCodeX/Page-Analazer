@@ -18,7 +18,7 @@ content = @`
             </tr>
             </thead>
             <tbody>
-            @for(var url : page.getUrlModels())
+            @for(var url : page.getUrls())
                 <tr>
                     <td>${url.getId()}</td>
                     <td>
