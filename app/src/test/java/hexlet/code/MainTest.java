@@ -129,8 +129,7 @@ public class MainTest {
             log.info("MockUrl: {}", baseUrl);
 
             //Кидаем тестовый кейс в бд (базовый урл будет тестовым)
-            String normalizedUrl = UrlsController.getNormalizeUrl(baseUrl.url());
-            UrlModel urlModel = new UrlModel(normalizedUrl, LocalDateTime.now());
+            UrlModel urlModel = new UrlModel(baseUrl.toString(), LocalDateTime.now());
             UrlRepository.save(urlModel);
 
             //Делаем check для переданного урла

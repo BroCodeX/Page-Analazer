@@ -118,7 +118,7 @@ public class UrlsController {
         Unirest.config().reset();
     }
 
-    public static String getNormalizeUrl(URL url) {
+    private static String getNormalizeUrl(URL url) {
         String baseUrl = String.format("%s://%s", url.getProtocol(), url.getHost())
                 .toLowerCase()
                 .trim();
@@ -128,7 +128,7 @@ public class UrlsController {
         return baseUrl;
     }
 
-    public static Map<String, String> getHtmlContent(String urlAddress) {
+    private static Map<String, String> getHtmlContent(String urlAddress) {
         Map<String, String> map = new HashMap<>();
         try {
             Connection.Response response = Jsoup.connect(urlAddress).timeout(5000).execute();
