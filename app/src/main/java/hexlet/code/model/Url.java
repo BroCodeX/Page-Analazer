@@ -38,8 +38,8 @@ public class Url {
         checks.add(check);
     }
 
-    public void addChecks(List<Check> checks) {
-        this.checks.addAll(checks);
+    public void addChecks(List<Check> checksList) {
+        this.checks.addAll(checksList);
     }
 
     public void deleteCheck(Check check) {
