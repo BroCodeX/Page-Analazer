@@ -23,7 +23,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
@@ -36,11 +40,9 @@ public class UrlsController {
         if (!CheckRepository.getEntries().isEmpty()) {
             for (Url url : urls) {
                 Long id = url.getId();
-                LinkedList<Check> checks = new LinkedList<>(CheckRepository.findEntries(id));
-                Check check = checks.peekLast();
+                Check check = CheckRepository.findLastCheck(id).orElse(null);
 
                 if (check != null) {
-//                    lastCheck.put(check.getUrlId(), check);
                     lastCheck.put(check.getUrlId(), check);
                 } else {
                     lastCheck.put(null, null);
