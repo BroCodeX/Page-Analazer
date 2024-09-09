@@ -7,9 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.List;
+import java.util.*;
 
 public class CheckRepository extends BaseRepository {
 
@@ -93,6 +91,48 @@ public class CheckRepository extends BaseRepository {
                 int statusCode = set.getInt("status_code");
                 Check check = new Check(id, statusCode, title, h1, description, urlId, createdAtCheck);
                 result.add(check);
+            }
+            return result;
+        }
+    }
+
+    public static Map<Long, Check> findEntriesMap(Long urlId) throws SQLException {
+        String sql = "SELECT * FROM url_checks WHERE url_id = ? ORDER BY id";
+        try (var conn = dataSource.getConnection();
+             var preparedStmt = conn.prepareStatement(sql)) {
+            preparedStmt.setLong(1, urlId);
+            ResultSet set = preparedStmt.executeQuery();
+            Map<Long, Check> result = new HashMap<>();
+            while (set.next()) {
+                Long id = set.getLong("id");
+                String title = set.getNString("title");
+                String h1 = set.getNString("h1");
+                String description = set.getNString("description");
+                LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
+                int statusCode = set.getInt("status_code");
+                Check check = new Check(id, statusCode, title, h1, description, urlId, createdAtCheck);
+                result.put(id, check);
+            }
+            return result;
+        }
+    }
+
+    public static Map<Long, Check> getEntriesMap() throws SQLException {
+        String sql = "SELECT * FROM url_checks ORDER BY id";
+        try (var conn = dataSource.getConnection();
+             var preparedStmt = conn.prepareStatement(sql)) {
+            ResultSet set = preparedStmt.executeQuery();
+            Map<Long, Check> result = new HashMap<>();
+            while (set.next()) {
+                Long id = set.getLong("id");
+                String title = set.getNString("title");
+                String h1 = set.getNString("h1");
+                String description = set.getNString("description");
+                LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
+                int statusCode = set.getInt("status_code");
+                Long urlId = set.getLong("url_id");
+                Check check = new Check(id, statusCode, title, h1, description, urlId, createdAtCheck);
+                result.put(id, check);
             }
             return result;
         }

@@ -24,9 +24,9 @@ content = @`
                     <td>
                         <a href="${NamedRoutes.urlPath(url.getId())}">${url.getName()}</a>
                     </td>
-                    @if(!url.getChecks().isEmpty() && url.getChecks().getLast() != null)
-                        <td>${url.getChecks().getLast().getFormattedDate()}</td>
-                        <td>${url.getChecks().getLast().getStatusCode()}</td>
+                    @if(!page.getLastCheckMap().isEmpty() && page.getLastCheckMap().get(url.getId()) != null)
+                        <td>${page.getLastCheckMap().get(url.getId()).getFormattedDate()}</td>
+                        <td>${page.getLastCheckMap().get(url.getId()).getStatusCode()}</td>
                     @endif
                 </tr>
             @endfor

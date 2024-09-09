@@ -23,10 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
@@ -35,14 +32,23 @@ public class UrlsController {
 
     public static void index(Context context) throws SQLException {
         List<Url> urls = UrlRepository.getEntries();
+        Map<Long, Check> lastCheck = new HashMap<>();
         if (!CheckRepository.getEntries().isEmpty()) {
             for (Url url : urls) {
                 Long id = url.getId();
                 LinkedList<Check> checks = new LinkedList<>(CheckRepository.findEntries(id));
-                url.addCheck(checks.peekLast());
+                Check check = checks.peekLast();
+
+                if (check != null) {
+//                    lastCheck.put(check.getUrlId(), check);
+                    lastCheck.put(check.getUrlId(), check);
+                } else {
+                    lastCheck.put(null, null);
+                }
             }
         }
         UrlsPage page = new UrlsPage(urls);
+        page.setLastCheckMap(lastCheck);
         page.setFlash(context.consumeSessionAttribute("flash"));
         page.setFlashType(context.consumeSessionAttribute("flashType"));
         context.render("urls/index.jte", model("page", page));
@@ -52,11 +58,13 @@ public class UrlsController {
         Long id = context.pathParamAsClass("id", Long.class).get();
         Url url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse(String.format("Url with %s is not found", id)));
+        List<Check> checks = new ArrayList<>();
         if (!CheckRepository.findEntries(id).isEmpty()) {
-            url.addChecks(CheckRepository.findEntries(id));
+            checks = CheckRepository.findEntries(id);
         }
 
         UrlPage page = new UrlPage(url);
+        page.setCheckList(checks);
         page.setFlash(context.consumeSessionAttribute("flash"));
         page.setFlashType(context.consumeSessionAttribute("flashType"));
         context.render("urls/show.jte", model("page", page));
@@ -103,7 +111,6 @@ public class UrlsController {
             Check check = new Check(statusCode, title, h1, description);
             check.setUrlId(url.getId());
             CheckRepository.save(check);
-            url.addCheck(check);
 
             context.sessionAttribute("flash", "Страница успешно проверена");
             context.sessionAttribute("flashType", "success");
