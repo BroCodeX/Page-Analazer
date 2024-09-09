@@ -18,15 +18,15 @@ content = @`
             </tr>
             </thead>
             <tbody>
-            @for(var url : page.getUrlModels())
+            @for(var url : page.getUrls())
                 <tr>
                     <td>${url.getId()}</td>
                     <td>
                         <a href="${NamedRoutes.urlPath(url.getId())}">${url.getName()}</a>
                     </td>
-                    @if(!url.getUrlChecks().isEmpty() && url.getUrlChecks().getLast() != null)
-                        <td>${url.getUrlChecks().getLast().getFormattedDate()}</td>
-                        <td>${url.getUrlChecks().getLast().getStatusCode()}</td>
+                    @if(!page.getLastCheckMap().isEmpty() && page.getLastCheckMap().get(url.getId()) != null)
+                        <td>${page.getLastCheckMap().get(url.getId()).getFormattedDate()}</td>
+                        <td>${page.getLastCheckMap().get(url.getId()).getStatusCode()}</td>
                     @endif
                 </tr>
             @endfor

@@ -1,7 +1,6 @@
 package hexlet.code;
 
-import hexlet.code.controller.UrlsController;
-import hexlet.code.model.UrlModel;
+import hexlet.code.model.Url;
 import hexlet.code.repository.CheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
@@ -129,12 +128,12 @@ public class MainTest {
             log.info("MockUrl: {}", baseUrl);
 
             //Кидаем тестовый кейс в бд (базовый урл будет тестовым)
-            String normalizedUrl = UrlsController.getNormalizeUrl(baseUrl.url());
-            UrlModel urlModel = new UrlModel(normalizedUrl, LocalDateTime.now());
-            UrlRepository.save(urlModel);
+            Url url = new Url(baseUrl.toString());
+            url.setCreatedAt(LocalDateTime.now());
+            UrlRepository.save(url);
 
             //Делаем check для переданного урла
-            Long testedId = 1L;
+            Long testedId = UrlRepository.find(baseUrl.toString()).get().getId();
             var requestCheck = NamedRoutes.checksPath(testedId);
             var responseCheck = client.post(requestCheck);
             assertThat(responseCheck.code()).isEqualTo(200);

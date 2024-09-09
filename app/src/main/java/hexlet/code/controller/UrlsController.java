@@ -2,8 +2,8 @@ package hexlet.code.controller;
 
 import hexlet.code.dto.urls.UrlPage;
 import hexlet.code.dto.urls.UrlsPage;
-import hexlet.code.model.UrlCheck;
-import hexlet.code.model.UrlModel;
+import hexlet.code.model.Check;
+import hexlet.code.model.Url;
 import hexlet.code.repository.CheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
@@ -23,11 +23,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
@@ -35,15 +35,22 @@ import static io.javalin.rendering.template.TemplateUtil.model;
 public class UrlsController {
 
     public static void index(Context context) throws SQLException {
-        List<UrlModel> urlModels = UrlRepository.getEntries();
+        List<Url> urls = UrlRepository.getEntries();
+        Map<Long, Check> lastCheck = new HashMap<>();
         if (!CheckRepository.getEntries().isEmpty()) {
-            for (UrlModel url : urlModels) {
+            for (Url url : urls) {
                 Long id = url.getId();
-                LinkedList<UrlCheck> checks = new LinkedList<>(CheckRepository.findEntries(id));
-                url.addCheck(checks.peekLast());
+                Check check = CheckRepository.findLastCheck(id).orElse(null);
+
+                if (check != null) {
+                    lastCheck.put(check.getUrlId(), check);
+                } else {
+                    lastCheck.put(null, null);
+                }
             }
         }
-        UrlsPage page = new UrlsPage(urlModels);
+        UrlsPage page = new UrlsPage(urls);
+        page.setLastCheckMap(lastCheck);
         page.setFlash(context.consumeSessionAttribute("flash"));
         page.setFlashType(context.consumeSessionAttribute("flashType"));
         context.render("urls/index.jte", model("page", page));
@@ -51,13 +58,15 @@ public class UrlsController {
 
     public static void show(Context context) throws SQLException {
         Long id = context.pathParamAsClass("id", Long.class).get();
-        UrlModel url = UrlRepository.find(id)
+        Url url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse(String.format("Url with %s is not found", id)));
+        List<Check> checks = new ArrayList<>();
         if (!CheckRepository.findEntries(id).isEmpty()) {
-            url.addChecks(CheckRepository.findEntries(id));
+            checks = CheckRepository.findEntries(id);
         }
 
         UrlPage page = new UrlPage(url);
+        page.setCheckList(checks);
         page.setFlash(context.consumeSessionAttribute("flash"));
         page.setFlashType(context.consumeSessionAttribute("flashType"));
         context.render("urls/show.jte", model("page", page));
@@ -77,7 +86,7 @@ public class UrlsController {
                 context.sessionAttribute("flashType", "warning");
                 context.redirect(NamedRoutes.rootPath());
             } else {
-                UrlModel urlModel = new UrlModel(normalizedUrl, LocalDateTime.now());
+                Url urlModel = new Url(normalizedUrl);
                 UrlRepository.save(urlModel);
                 context.sessionAttribute("flash", "Страница успешно добавлена");
                 context.sessionAttribute("flashType", "success");
@@ -93,19 +102,17 @@ public class UrlsController {
 
     public static void check(Context context) throws SQLException {
         Long id = context.pathParamAsClass("id", Long.class).get();
-        UrlModel url = UrlRepository.find(id).get();
+        Url url = UrlRepository.find(id).get();
         try {
             Map<String, String> content = getHtmlContent(url.getName());
             String title = content.get("title");
             String h1 = content.get("h1");
             String description = content.get("description");
             int statusCode = Integer.parseInt(content.get("status"));
-            LocalDateTime createdAtCheck = LocalDateTime.now();
 
-            UrlCheck check = new UrlCheck(title, h1, description, createdAtCheck, statusCode);
+            Check check = new Check(statusCode, title, h1, description);
             check.setUrlId(url.getId());
             CheckRepository.save(check);
-            url.addCheck(check);
 
             context.sessionAttribute("flash", "Страница успешно проверена");
             context.sessionAttribute("flashType", "success");
@@ -118,7 +125,7 @@ public class UrlsController {
         Unirest.config().reset();
     }
 
-    public static String getNormalizeUrl(URL url) {
+    private static String getNormalizeUrl(URL url) {
         String baseUrl = String.format("%s://%s", url.getProtocol(), url.getHost())
                 .toLowerCase()
                 .trim();
@@ -128,7 +135,7 @@ public class UrlsController {
         return baseUrl;
     }
 
-    public static Map<String, String> getHtmlContent(String urlAddress) {
+    private static Map<String, String> getHtmlContent(String urlAddress) {
         Map<String, String> map = new HashMap<>();
         try {
             Connection.Response response = Jsoup.connect(urlAddress).timeout(5000).execute();
