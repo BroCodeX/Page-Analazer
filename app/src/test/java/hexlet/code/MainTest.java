@@ -17,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -129,7 +128,6 @@ public class MainTest {
 
             //Кидаем тестовый кейс в бд (базовый урл будет тестовым)
             Url url = new Url(baseUrl.toString());
-            url.setCreatedAt(LocalDateTime.now());
             UrlRepository.save(url);
 
             //Делаем check для переданного урла
