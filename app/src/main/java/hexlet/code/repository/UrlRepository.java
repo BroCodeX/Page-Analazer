@@ -37,9 +37,7 @@ public class UrlRepository extends BaseRepository {
             preparedStmt.setLong(1, id);
             ResultSet set = preparedStmt.executeQuery();
             if (set.next()) {
-                String name = set.getString("name");
-                LocalDateTime createdAt = set.getTimestamp("created_at").toLocalDateTime();
-                Url url = new Url(id, name, createdAt);
+                Url url = makeUrl(set, id);
                 return Optional.of(url);
             } else {
                 return Optional.empty();
@@ -54,10 +52,8 @@ public class UrlRepository extends BaseRepository {
             preparedStmt.setString(1, url);
             ResultSet set = preparedStmt.executeQuery();
             if (set.next()) {
-                String name = set.getString("name");
-                LocalDateTime createdAt = set.getTimestamp("created_at").toLocalDateTime();
                 Long id = set.getLong("id");
-                Url urlModel = new Url(id, name, createdAt);
+                Url urlModel = makeUrl(set, id);
                 return Optional.of(urlModel);
             } else {
                 return Optional.empty();
@@ -73,12 +69,16 @@ public class UrlRepository extends BaseRepository {
             List<Url> result = new ArrayList<>();
             while (set.next()) {
                 Long id = set.getLong("id");
-                String name = set.getString("name");
-                LocalDateTime createdAt = set.getTimestamp("created_at").toLocalDateTime();
-                Url url = new Url(id, name, createdAt);
+                Url url = makeUrl(set, id);
                 result.add(url);
             }
             return result;
         }
+    }
+
+    public static Url makeUrl(ResultSet set, Long id) throws SQLException {
+        String name = set.getString("name");
+        LocalDateTime createdAt = set.getTimestamp("created_at").toLocalDateTime();
+        return new Url(id, name, createdAt);
     }
 }

@@ -9,7 +9,6 @@ import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
-import kong.unirest.core.Unirest;
 import kong.unirest.core.UnirestException;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;

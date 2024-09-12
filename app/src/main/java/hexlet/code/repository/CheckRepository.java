@@ -44,13 +44,7 @@ public class CheckRepository extends BaseRepository {
             preparedStmt.setLong(1, urlId);
             ResultSet set = preparedStmt.executeQuery();
             if (set.next()) {
-                Long id = set.getLong("id");
-                String title = set.getNString("title");
-                String h1 = set.getNString("h1");
-                String description = set.getNString("description");
-                LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
-                int statusCode = set.getInt("status_code");
-                Check check = new Check(id, statusCode, title, h1, description, urlId, createdAtCheck);
+                Check check = makeCheck(set, urlId);
                 return Optional.of(check);
             } else {
                 return Optional.empty();
@@ -65,14 +59,8 @@ public class CheckRepository extends BaseRepository {
             ResultSet set = preparedStmt.executeQuery();
             List<Check> result = new ArrayList<>();
             while (set.next()) {
-                Long id = set.getLong("id");
-                String title = set.getNString("title");
-                String h1 = set.getNString("h1");
-                String description = set.getNString("description");
-                LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
-                int statusCode = set.getInt("status_code");
                 Long urlId = set.getLong("url_id");
-                Check check = new Check(id, statusCode, title, h1, description, urlId, createdAtCheck);
+                Check check = makeCheck(set, urlId);
                 result.add(check);
             }
             return result;
@@ -87,17 +75,21 @@ public class CheckRepository extends BaseRepository {
             ResultSet set = preparedStmt.executeQuery();
             List<Check> result = new ArrayList<>();
             while (set.next()) {
-                Long id = set.getLong("id");
-                String title = set.getNString("title");
-                String h1 = set.getNString("h1");
-                String description = set.getNString("description");
-                LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
-                int statusCode = set.getInt("status_code");
-                Check check = new Check(id, statusCode, title, h1, description, urlId, createdAtCheck);
+                Check check = makeCheck(set, urlId);
                 result.add(check);
             }
             return result;
         }
+    }
+
+    public static Check makeCheck(ResultSet set, Long urlId) throws SQLException {
+        Long id = set.getLong("id");
+        String title = set.getNString("title");
+        String h1 = set.getNString("h1");
+        String description = set.getNString("description");
+        LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
+        int statusCode = set.getInt("status_code");
+        return new Check(id, statusCode, title, h1, description, urlId, createdAtCheck);
     }
 
     public static Map<Long, Check> findEntriesMap(Long urlId) throws SQLException {
@@ -109,12 +101,7 @@ public class CheckRepository extends BaseRepository {
             Map<Long, Check> result = new HashMap<>();
             while (set.next()) {
                 Long id = set.getLong("id");
-                String title = set.getNString("title");
-                String h1 = set.getNString("h1");
-                String description = set.getNString("description");
-                LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
-                int statusCode = set.getInt("status_code");
-                Check check = new Check(id, statusCode, title, h1, description, urlId, createdAtCheck);
+                Check check = makeCheck(set, urlId);
                 result.put(id, check);
             }
             return result;
@@ -129,13 +116,8 @@ public class CheckRepository extends BaseRepository {
             Map<Long, Check> result = new HashMap<>();
             while (set.next()) {
                 Long id = set.getLong("id");
-                String title = set.getNString("title");
-                String h1 = set.getNString("h1");
-                String description = set.getNString("description");
-                LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
-                int statusCode = set.getInt("status_code");
                 Long urlId = set.getLong("url_id");
-                Check check = new Check(id, statusCode, title, h1, description, urlId, createdAtCheck);
+                Check check = makeCheck(set, urlId);
                 result.put(id, check);
             }
             return result;
