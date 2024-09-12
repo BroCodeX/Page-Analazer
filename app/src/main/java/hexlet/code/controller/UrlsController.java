@@ -7,6 +7,7 @@ import hexlet.code.model.Url;
 import hexlet.code.repository.CheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
+import hexlet.code.util.Tools;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 import kong.unirest.core.UnirestException;
@@ -65,7 +66,7 @@ public class UrlsController {
             log.info("Переданный урл: {}", name);
             URI uri = new URI(name);
             URL url = uri.toURL();
-            String normalizedUrl = getNormalizeUrl(url);
+            String normalizedUrl = Tools.getNormalizeUrl(url);
             log.info("Нормализованный урл: {}", normalizedUrl);
             if (UrlRepository.find(normalizedUrl).isPresent()) {
                 context.sessionAttribute("flash", "Страница уже существует");
@@ -102,16 +103,6 @@ public class UrlsController {
             context.sessionAttribute("flashType", "danger");
             context.redirect(NamedRoutes.urlPath(id));
         }
-    }
-
-    private static String getNormalizeUrl(URL url) {
-        String baseUrl = String.format("%s://%s", url.getProtocol(), url.getHost())
-                .toLowerCase()
-                .trim();
-        if (url.getPort() != -1) {
-            return String.format("%s:%s", baseUrl, url.getPort());
-        }
-        return baseUrl;
     }
 
     private static Check getHtmlContent(String urlAddress) {
