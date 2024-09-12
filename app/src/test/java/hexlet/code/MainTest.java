@@ -4,6 +4,7 @@ import hexlet.code.model.Url;
 import hexlet.code.repository.CheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
+import hexlet.code.util.Tools;
 import io.javalin.Javalin;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.HttpUrl;
@@ -142,7 +143,7 @@ public class MainTest {
             assertEquals("https://ya.title", testedCheck.get().getTitle());
             assertEquals("Yandex-H1", testedCheck.get().getH1());
             assertEquals("Yandex-description", testedCheck.get().getDescription());
-            assertFalse(testedCheck.get().getFormattedDate().isBlank());
+            assertFalse(Tools.getFormattedDate(testedCheck.get().getCreatedAt()).isBlank());
         });
     }
 

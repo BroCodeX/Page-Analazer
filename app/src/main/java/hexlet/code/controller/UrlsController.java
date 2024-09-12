@@ -7,9 +7,9 @@ import hexlet.code.model.Url;
 import hexlet.code.repository.CheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
+import hexlet.code.util.Tools;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
-import kong.unirest.core.Unirest;
 import kong.unirest.core.UnirestException;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
@@ -24,7 +24,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,19 +35,7 @@ public class UrlsController {
 
     public static void index(Context context) throws SQLException {
         List<Url> urls = UrlRepository.getEntries();
-        Map<Long, Check> lastCheck = new HashMap<>();
-        if (!CheckRepository.getEntries().isEmpty()) {
-            for (Url url : urls) {
-                Long id = url.getId();
-                Check check = CheckRepository.findLastCheck(id).orElse(null);
-
-                if (check != null) {
-                    lastCheck.put(check.getUrlId(), check);
-                } else {
-                    lastCheck.put(null, null);
-                }
-            }
-        }
+        Map<Long, Check> lastCheck = CheckRepository.getLastChecks();
         UrlsPage page = new UrlsPage(urls);
         page.setLastCheckMap(lastCheck);
         page.setFlash(context.consumeSessionAttribute("flash"));
@@ -79,7 +66,7 @@ public class UrlsController {
             log.info("Переданный урл: {}", name);
             URI uri = new URI(name);
             URL url = uri.toURL();
-            String normalizedUrl = getNormalizeUrl(url);
+            String normalizedUrl = Tools.getNormalizeUrl(url);
             log.info("Нормализованный урл: {}", normalizedUrl);
             if (UrlRepository.find(normalizedUrl).isPresent()) {
                 context.sessionAttribute("flash", "Страница уже существует");
@@ -104,13 +91,7 @@ public class UrlsController {
         Long id = context.pathParamAsClass("id", Long.class).get();
         Url url = UrlRepository.find(id).get();
         try {
-            Map<String, String> content = getHtmlContent(url.getName());
-            String title = content.get("title");
-            String h1 = content.get("h1");
-            String description = content.get("description");
-            int statusCode = Integer.parseInt(content.get("status"));
-
-            Check check = new Check(statusCode, title, h1, description);
+            Check check = getHtmlContent(url.getName());
             check.setUrlId(url.getId());
             CheckRepository.save(check);
 
@@ -122,37 +103,23 @@ public class UrlsController {
             context.sessionAttribute("flashType", "danger");
             context.redirect(NamedRoutes.urlPath(id));
         }
-        Unirest.config().reset();
     }
 
-    private static String getNormalizeUrl(URL url) {
-        String baseUrl = String.format("%s://%s", url.getProtocol(), url.getHost())
-                .toLowerCase()
-                .trim();
-        if (url.getPort() != -1) {
-            return String.format("%s:%s", baseUrl, url.getPort());
-        }
-        return baseUrl;
-    }
-
-    private static Map<String, String> getHtmlContent(String urlAddress) {
-        Map<String, String> map = new HashMap<>();
+    private static Check getHtmlContent(String urlAddress) {
         try {
             Connection.Response response = Jsoup.connect(urlAddress).timeout(5000).execute();
-
             int statusCode = response.statusCode();
-            map.put("status", String.valueOf(statusCode));
             Document document = response.parse();
-            map.put("title", document.title());
+            String title = document.title();
             Element h1Element = document
                     .selectFirst("h1");
-            map.put("h1", h1Element == null ? "" : h1Element.text());
+            String h1 = h1Element == null ? "" : h1Element.text();
             Element descriptionEl = document
                     .selectFirst("meta[name=description]");
-            map.put("description", descriptionEl == null ? "" : descriptionEl.attr("content"));
+            String description = descriptionEl == null ? "" : descriptionEl.attr("content");
+            return new Check(statusCode, title, h1, description);
         } catch (IOException ex) {
             throw new UnirestException("Страница не найдена или недоступна для проверки");
         }
-        return map;
     }
 }

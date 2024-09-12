@@ -1,5 +1,6 @@
 @import hexlet.code.dto.urls.UrlsPage
 @import hexlet.code.util.NamedRoutes
+@import hexlet.code.util.Tools
 @param UrlsPage page
 
 @template.layout.page(
@@ -25,7 +26,7 @@ content = @`
                         <a href="${NamedRoutes.urlPath(url.getId())}">${url.getName()}</a>
                     </td>
                     @if(!page.getLastCheckMap().isEmpty() && page.getLastCheckMap().get(url.getId()) != null)
-                        <td>${page.getLastCheckMap().get(url.getId()).getFormattedDate()}</td>
+                        <td>${Tools.getFormattedDate(page.getLastCheckMap().get(url.getId()).getCreatedAt())}</td>
                         <td>${page.getLastCheckMap().get(url.getId()).getStatusCode()}</td>
                     @endif
                 </tr>
