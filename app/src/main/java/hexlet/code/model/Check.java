@@ -25,9 +25,4 @@ public class Check {
         this.description = description;
         this.statusCode = statusCode;
     }
-
-    public String getFormattedDate() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        return createdAt.format(formatter);
-    }
 }
