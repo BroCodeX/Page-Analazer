@@ -23,7 +23,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,19 +34,7 @@ public class UrlsController {
 
     public static void index(Context context) throws SQLException {
         List<Url> urls = UrlRepository.getEntries();
-        Map<Long, Check> lastCheck = new HashMap<>();
-        if (!CheckRepository.getEntries().isEmpty()) {
-            for (Url url : urls) {
-                Long id = url.getId();
-                Check check = CheckRepository.findLastCheck(id).orElse(null);
-
-                if (check != null) {
-                    lastCheck.put(check.getUrlId(), check);
-                } else {
-                    lastCheck.put(null, null);
-                }
-            }
-        }
+        Map<Long, Check> lastCheck = CheckRepository.getLastChecks();
         UrlsPage page = new UrlsPage(urls);
         page.setLastCheckMap(lastCheck);
         page.setFlash(context.consumeSessionAttribute("flash"));

@@ -82,6 +82,21 @@ public class CheckRepository extends BaseRepository {
         }
     }
 
+    public static Map<Long, Check> getLastChecks() throws SQLException {
+        String sql = "SELECT * FROM url_checks ORDER BY id ASC";
+        try (var conn = dataSource.getConnection();
+             var preparedStmt = conn.prepareStatement(sql)) {
+            ResultSet set = preparedStmt.executeQuery();
+            Map<Long, Check> result = new HashMap<>();
+            while (set.next()) {
+                Long urlId = set.getLong("url_id");
+                Check check = makeCheck(set, urlId);
+                result.put(urlId, check);
+            }
+            return result;
+        }
+    }
+
     public static Check makeCheck(ResultSet set, Long urlId) throws SQLException {
         Long id = set.getLong("id");
         String title = set.getNString("title");
@@ -90,37 +105,5 @@ public class CheckRepository extends BaseRepository {
         LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
         int statusCode = set.getInt("status_code");
         return new Check(id, statusCode, title, h1, description, urlId, createdAtCheck);
-    }
-
-    public static Map<Long, Check> findEntriesMap(Long urlId) throws SQLException {
-        String sql = "SELECT * FROM url_checks WHERE url_id = ? ORDER BY id";
-        try (var conn = dataSource.getConnection();
-             var preparedStmt = conn.prepareStatement(sql)) {
-            preparedStmt.setLong(1, urlId);
-            ResultSet set = preparedStmt.executeQuery();
-            Map<Long, Check> result = new HashMap<>();
-            while (set.next()) {
-                Long id = set.getLong("id");
-                Check check = makeCheck(set, urlId);
-                result.put(id, check);
-            }
-            return result;
-        }
-    }
-
-    public static Map<Long, Check> getEntriesMap() throws SQLException {
-        String sql = "SELECT * FROM url_checks ORDER BY id";
-        try (var conn = dataSource.getConnection();
-             var preparedStmt = conn.prepareStatement(sql)) {
-            ResultSet set = preparedStmt.executeQuery();
-            Map<Long, Check> result = new HashMap<>();
-            while (set.next()) {
-                Long id = set.getLong("id");
-                Long urlId = set.getLong("url_id");
-                Check check = makeCheck(set, urlId);
-                result.put(id, check);
-            }
-            return result;
-        }
     }
 }
