@@ -25,7 +25,7 @@ public class CheckRepository extends BaseRepository {
             preparedStmt.setString(3, check.getH1());
             preparedStmt.setString(4, check.getTitle());
             preparedStmt.setString(5, check.getDescription());
-            preparedStmt.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
+            preparedStmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
 
             preparedStmt.executeUpdate();
             var generatedKeys = preparedStmt.getGeneratedKeys();

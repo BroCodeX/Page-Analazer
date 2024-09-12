@@ -122,7 +122,6 @@ public class UrlsController {
             context.sessionAttribute("flashType", "danger");
             context.redirect(NamedRoutes.urlPath(id));
         }
-        Unirest.config().reset();
     }
 
     private static String getNormalizeUrl(URL url) {

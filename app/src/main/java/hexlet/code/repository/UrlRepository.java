@@ -18,8 +18,7 @@ public class UrlRepository extends BaseRepository {
         try (var conn = dataSource.getConnection();
                 var preparedStmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preparedStmt.setString(1, url.getName());
-            LocalDateTime createdAt = LocalDateTime.now();
-            preparedStmt.setTimestamp(2, Timestamp.valueOf(createdAt));
+            preparedStmt.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
 
             preparedStmt.executeUpdate();
             var generatedKeys = preparedStmt.getGeneratedKeys();
