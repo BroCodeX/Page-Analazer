@@ -99,9 +99,9 @@ public class CheckRepository extends BaseRepository {
 
     public static Check makeCheck(ResultSet set, Long urlId) throws SQLException {
         Long id = set.getLong("id");
-        String title = set.getNString("title");
-        String h1 = set.getNString("h1");
-        String description = set.getNString("description");
+        String title = set.getString("title");
+        String h1 = set.getString("h1");
+        String description = set.getString("description");
         LocalDateTime createdAtCheck = set.getTimestamp("created_at").toLocalDateTime();
         int statusCode = set.getInt("status_code");
         return new Check(id, statusCode, title, h1, description, urlId, createdAtCheck);
