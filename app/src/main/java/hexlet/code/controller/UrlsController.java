@@ -103,13 +103,7 @@ public class UrlsController {
         Long id = context.pathParamAsClass("id", Long.class).get();
         Url url = UrlRepository.find(id).get();
         try {
-            Map<String, String> content = getHtmlContent(url.getName());
-            String title = content.get("title");
-            String h1 = content.get("h1");
-            String description = content.get("description");
-            int statusCode = Integer.parseInt(content.get("status"));
-
-            Check check = new Check(statusCode, title, h1, description);
+            Check check = getHtmlContent(url.getName());
             check.setUrlId(url.getId());
             CheckRepository.save(check);
 
@@ -133,24 +127,21 @@ public class UrlsController {
         return baseUrl;
     }
 
-    private static Map<String, String> getHtmlContent(String urlAddress) {
-        Map<String, String> map = new HashMap<>();
+    private static Check getHtmlContent(String urlAddress) {
         try {
             Connection.Response response = Jsoup.connect(urlAddress).timeout(5000).execute();
-
             int statusCode = response.statusCode();
-            map.put("status", String.valueOf(statusCode));
             Document document = response.parse();
-            map.put("title", document.title());
+            String title = document.title();
             Element h1Element = document
                     .selectFirst("h1");
-            map.put("h1", h1Element == null ? "" : h1Element.text());
+            String h1 = h1Element == null ? "" : h1Element.text();
             Element descriptionEl = document
                     .selectFirst("meta[name=description]");
-            map.put("description", descriptionEl == null ? "" : descriptionEl.attr("content"));
+            String description = descriptionEl == null ? "" : descriptionEl.attr("content");
+            return new Check(statusCode, title, h1, description);
         } catch (IOException ex) {
             throw new UnirestException("Страница не найдена или недоступна для проверки");
         }
-        return map;
     }
 }
