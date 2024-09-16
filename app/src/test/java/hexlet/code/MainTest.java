@@ -143,7 +143,7 @@ public class MainTest {
             assertEquals("https://ya.title", testedCheck.get().getTitle());
             assertEquals("Yandex-H1", testedCheck.get().getH1());
             assertEquals("Yandex-description", testedCheck.get().getDescription());
-            assertFalse(Tools.getFormattedDate(testedCheck.get().getCreatedAt()).isBlank());
+            assertFalse(Tools.formatDate(testedCheck.get().getCreatedAt()).isBlank());
         });
     }
 

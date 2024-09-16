@@ -19,9 +19,7 @@ import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,12 +59,10 @@ public class UrlsController {
 
     public static void create(Context context) throws SQLException {
         try {
-            var name = context.formParamAsClass("url", String.class)
+            String name = context.formParamAsClass("url", String.class)
                     .get();
             log.info("Переданный урл: {}", name);
-            URI uri = new URI(name);
-            URL url = uri.toURL();
-            String normalizedUrl = Tools.getNormalizeUrl(url);
+            String normalizedUrl = Tools.normalizeUrl(name);
             log.info("Нормализованный урл: {}", normalizedUrl);
             if (UrlRepository.find(normalizedUrl).isPresent()) {
                 context.sessionAttribute("flash", "Страница уже существует");

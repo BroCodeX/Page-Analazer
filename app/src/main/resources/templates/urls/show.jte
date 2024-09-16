@@ -21,7 +21,7 @@ content = @`
             </tr>
             <tr>
                 <td>Дата создания</td>
-                <td>${Tools.getFormattedDate(page.getUrl().getCreatedAt())}</td>
+                <td>${Tools.formatDate(page.getUrl().getCreatedAt())}</td>
             </tr>
             </tbody>
         </table>
@@ -51,7 +51,7 @@ content = @`
                         <td>${check.getTitle()}</td>
                         <td>${check.getH1()}</td>
                         <td>${check.getDescription()}</td>
-                        <td>${Tools.getFormattedDate(check.getCreatedAt())}</td>
+                        <td>${Tools.formatDate(check.getCreatedAt())}</td>
                     </tr>
                 @endfor
             @endif

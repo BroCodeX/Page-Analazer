@@ -52,21 +52,6 @@ public class CheckRepository extends BaseRepository {
         }
     }
 
-    public static List<Check> getEntries() throws SQLException {
-        String sql = "SELECT * FROM url_checks ORDER BY id";
-        try (var conn = dataSource.getConnection();
-                var preparedStmt = conn.prepareStatement(sql)) {
-            ResultSet set = preparedStmt.executeQuery();
-            List<Check> result = new ArrayList<>();
-            while (set.next()) {
-                Long urlId = set.getLong("url_id");
-                Check check = makeCheck(set, urlId);
-                result.add(check);
-            }
-            return result;
-        }
-    }
-
     public static List<Check> findEntries(Long urlId) throws SQLException {
         String sql = "SELECT * FROM url_checks WHERE url_id = ? ORDER BY id";
         try (var conn = dataSource.getConnection();

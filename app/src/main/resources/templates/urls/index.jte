@@ -26,7 +26,7 @@ content = @`
                         <a href="${NamedRoutes.urlPath(url.getId())}">${url.getName()}</a>
                     </td>
                     @if(!page.getLastCheckMap().isEmpty() && page.getLastCheckMap().get(url.getId()) != null)
-                        <td>${Tools.getFormattedDate(page.getLastCheckMap().get(url.getId()).getCreatedAt())}</td>
+                        <td>${Tools.formatDate(page.getLastCheckMap().get(url.getId()).getCreatedAt())}</td>
                         <td>${page.getLastCheckMap().get(url.getId()).getStatusCode()}</td>
                     @endif
                 </tr>
